@@ -2,526 +2,613 @@
 
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Ausgaben">
-  <meta name="theme-color" content="#0A0A0A">
-  <title>Lucien · Ausgaben</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body { background: #0A0A0A; color: #CCCCCC; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; min-height: 100vh; }
-    @keyframes pulse { 0%,100%{opacity:0.4;transform:scale(0.8)} 50%{opacity:1;transform:scale(1.2)} }
-    @keyframes slideIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-    .slide-in { animation: slideIn 0.3s ease; }
-    button { cursor: pointer; font-family: inherit; }
-    input, textarea { font-family: inherit; }
-    ::-webkit-scrollbar { display: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Koinonia">
+<meta name="theme-color" content="#000000">
+<title>Koinonia</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden}
+button{cursor:pointer;font-family:inherit;border:none;outline:none;transition:opacity .15s,transform .12s}
+button:active{opacity:.7;transform:scale(.96)}
+input,textarea{font-family:inherit;outline:none}
+::-webkit-scrollbar{display:none}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes su{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes dot{0%,100%{opacity:.2;transform:scale(.6)}50%{opacity:1;transform:scale(1.2)}}
+.fu{animation:fu .28s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
+.su{animation:su .32s cubic-bezier(.16,1,.3,1)}
+</style>
 </head>
 <body>
-
 <div id="app"></div>
-
 <script>
-// ── DATA ──────────────────────────────────────────────────────────────────────
-const INITIAL = [
-  { id:1,  label:"Ticket Amsterdam",  amount:43,   date:"2026-03-26", icon:"🎟️", note:"Amsterdam Trip" },
-  { id:2,  label:"Essen Burrito",     amount:25,   date:"2026-03-26", icon:"🌯", note:"Amsterdam" },
-  { id:3,  label:"Coffee Shop",       amount:26,   date:"2026-03-26", icon:"☕", note:"Amsterdam" },
-  { id:4,  label:"Kuchen",            amount:5,    date:"2026-03-26", icon:"🍰", note:"Amsterdam" },
-  { id:5,  label:"Tax Tourismus",     amount:28.5, date:"2026-03-26", icon:"🏛️", note:"Amsterdam" },
-  { id:6,  label:"Uber",              amount:23,   date:"2026-03-26", icon:"🚗", note:"Amsterdam" },
-  { id:7,  label:"The Sirens Fine Dining", amount:160, date:"2026-03-26", icon:"🍽️", note:"Geburtstag Verlobte 💍" },
-  { id:8,  label:"Bolt",              amount:30,   date:"2026-03-26", icon:"🛴", note:"Amsterdam" },
-  { id:9,  label:"Lebensmittel",      amount:85,   date:"2026-03-22", icon:"🛒", note:"" },
-  { id:10, label:"Sport Supplement",  amount:40,   date:"2026-03-20", icon:"💪", note:"" },
+var ICONS = ["cart","food","coffee","car","plane","fun","shirt","pill","phone","gift","sport","beer","hotel","fuel","cinema","book","gym","music","wrap","cake","scooter","ticket","tax","shoe","scissors","nail","cash","cinema2","beauty","barber"];
+var ICON_MAP = {cart:"🛒",food:"🍽",coffee:"☕",car:"🚗",plane:"✈",fun:"🎭",shirt:"👕",pill:"💊",phone:"📱",gift:"🎁",sport:"⚽",beer:"🍺",hotel:"🏨",fuel:"⛽",cinema:"🎬",book:"📚",gym:"💪",music:"🎵",wrap:"🌯",cake:"🍰",scooter:"🛴",ticket:"🎫",tax:"🏦",shoe:"👟",scissors:"✂",nail:"💅",cash:"💵",cinema2:"🎪",beauty:"🧴",barber:"💈"};
+function ico(k){return ICON_MAP[k]||"💶";}
+
+var SEED = [
+{id:1,label:“Ticket Amsterdam”,amount:43,date:“2026-03-26”,icon:“ticket”,note:“Amsterdam”},
+{id:2,label:“Burrito”,amount:25,date:“2026-03-26”,icon:“wrap”,note:“Amsterdam”},
+{id:3,label:“Coffee Shop”,amount:26,date:“2026-03-26”,icon:“coffee”,note:“Amsterdam”},
+{id:4,label:“Kuchen”,amount:5,date:“2026-03-26”,icon:“cake”,note:“Amsterdam”},
+{id:5,label:“Tax Tourismus”,amount:28.5,date:“2026-03-26”,icon:“tax”,note:“Amsterdam”},
+{id:6,label:“Uber”,amount:23,date:“2026-03-26”,icon:“car”,note:“Amsterdam”},
+{id:7,label:“The Sirens”,amount:160,date:“2026-03-26”,icon:“food”,note:“Geburtstag Verlobte”},
+{id:8,label:“Bolt”,amount:30,date:“2026-03-26”,icon:“scooter”,note:“Amsterdam”},
+{id:9,label:“Supermarkt”,amount:85,date:“2026-03-22”,icon:“cart”,note:””},
+{id:10,label:“Sport”,amount:40,date:“2026-03-20”,icon:“gym”,note:””},
+{id:11,label:“Coffee”,amount:8,date:“2026-03-19”,icon:“coffee”,note:””},
+{id:12,label:“Friseur”,amount:35,date:“2026-03-17”,icon:“scissors”,note:””},
+{id:13,label:“Kino”,amount:22,date:“2026-03-14”,icon:“cinema”,note:””},
+{id:14,label:“Supermarkt”,amount:62,date:“2026-03-15”,icon:“cart”,note:””},
+{id:15,label:“Naegel”,amount:45,date:“2026-03-10”,icon:“nail”,note:””}
 ];
 
-const ICONS = ["🛒","🍽️","☕","🚗","✈️","🎭","👕","💊","📱","🎮","🎁","💇","⚽","🍺","🏨","⛽","🎬","📚","💪","🎵","🌯","🍰","🛴","🎟️","🏛️","👟","🎸","🌿"];
-
-// ── STORAGE ───────────────────────────────────────────────────────────────────
-function loadData(key, fallback) {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
-}
-function saveData(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
-}
-
-// ── STATE ─────────────────────────────────────────────────────────────────────
-let state = {
-  expenses: loadData("lf-expenses-v2", INITIAL),
-  weekBudget: loadData("lf-budget-v2", 400),
-  tab: "heute",
-  modal: null, // null | "scan" | "add" | "budget"
-  scanStep: "input", // input | scanning | confirm
-  scanText: "",
-  scanResults: [],
-  addForm: { label:"", amount:"", date: new Date().toISOString().split("T")[0], icon:"🛒", note:"" },
-  budgetInput: "400",
-  aiMsg: "",
-  aiLoading: false,
-  savedFlash: false,
+// Storage
+var db = {
+get: function(k,fb){try{var v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;}},
+set: function(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 };
 
-function setState(patch) {
-  state = { ...state, ...patch };
-  render();
+// State
+var S = {
+exp: db.get(“koin5-exp”, SEED),
+wb:  db.get(“koin5-wb”, 400),
+mb:  db.get(“koin5-mb”, 1500),
+tab: “home”,
+modal: null,
+scanStep: “input”,
+scanText: “”,
+scanRes: [],
+form: {label:””,amount:””,date:today(),icon:“cart”,note:””},
+aiTip: “”, aiTipL: false,
+fcAi: “”,  fcAiL: false,
+flash: false
+};
+
+function setState(patch){
+for(var k in patch) S[k] = patch[k];
+render();
 }
 
-function saveExpenses() {
-  saveData("lf-expenses-v2", state.expenses);
-  setState({ savedFlash: true });
-  setTimeout(() => setState({ savedFlash: false }), 1500);
+function saveExp(){
+db.set(“koin5-exp”, S.exp);
+setState({flash:true});
+setTimeout(function(){setState({flash:false});}, 1000);
 }
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-function fmt(n) { return "€ " + Number(n).toLocaleString("de-DE", { minimumFractionDigits:0, maximumFractionDigits:2 }); }
+function today(){return new Date().toISOString().split(“T”)[0];}
+function fmt(n){return “\u20AC\u202f” + Number(n).toLocaleString(“de-DE”,{minimumFractionDigits:0,maximumFractionDigits:2});}
 
-function isToday(d) {
-  const now = new Date(), date = new Date(d);
-  return date.toDateString() === now.toDateString();
+function isToday(d){return new Date(d).toDateString()===new Date().toDateString();}
+function isWeek(d){
+var now=new Date(),date=new Date(d),day=now.getDay()||7;
+var mon=new Date(now);mon.setDate(now.getDate()-day+1);mon.setHours(0,0,0,0);
+var sun=new Date(mon);sun.setDate(mon.getDate()+6);sun.setHours(23,59,59,999);
+return date>=mon&&date<=sun;
 }
-function isThisWeek(d) {
-  const now = new Date(), date = new Date(d);
-  const day = now.getDay() || 7;
-  const mon = new Date(now); mon.setDate(now.getDate() - day + 1); mon.setHours(0,0,0,0);
-  const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
-  return date >= mon && date <= sun;
-}
+function isMonth(d){var now=new Date(),date=new Date(d);return date.getMonth()===now.getMonth()&&date.getFullYear()===now.getFullYear();}
 
-function getDisplayExp() {
-  if (state.tab === "heute") return state.expenses.filter(e => isToday(e.date));
-  if (state.tab === "woche") return state.expenses.filter(e => isThisWeek(e.date));
-  return state.expenses;
+function calcFc(){
+var now=new Date(),dom=now.getDate(),dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+var ms=S.exp.filter(function(e){return isMonth(e.date);}).reduce(function(s,e){return s+e.amount;},0);
+var dr=dom>0?ms/dom:0,fore=dr*dim,diff=fore-S.mb,dl=dim-dom,bl=S.mb-ms;
+return{ms:ms,fore:fore,diff:diff,dom:dom,dim:dim,dl:dl,bl:bl,dr:dr,dleft:dl>0?bl/dl:0};
 }
 
-// ── ACTIONS ───────────────────────────────────────────────────────────────────
-function addExpense(e) {
-  state.expenses = [{ ...e, id: Date.now() + Math.random() }, ...state.expenses];
-  saveExpenses();
+// AI
+async function callAI(system, msg){
+var res = await fetch(“https://api.anthropic.com/v1/messages”,{
+method:“POST”,
+headers:{“Content-Type”:“application/json”},
+body:JSON.stringify({model:“claude-sonnet-4-20250514”,max_tokens:400,system:system,messages:[{role:“user”,content:msg}]})
+});
+var d = await res.json();
+return (d.content && d.content[0]) ? d.content[0].text : “”;
 }
 
-function deleteExpense(id) {
-  state.expenses = state.expenses.filter(x => x.id !== id);
-  saveExpenses();
+async function getTip(){
+setState({aiTipL:true});
+var ws=S.exp.filter(function(e){return isWeek(e.date);}).reduce(function(s,e){return s+e.amount;},0);
+var top=[].concat(S.exp).sort(function(a,b){return b.amount-a.amount;}).slice(0,3);
+try{
+var t=await callAI(“Finanzberater. 2 Saetze Deutsch. Direkt. Konkret.”,“Budget E”+S.wb+”. Ausgaben E”+Math.round(ws)+”. Top: “+top.map(function(e){return e.label+” E”+e.amount;}).join(”, “)+”.”);
+setState({aiTip:t,aiTipL:false});
+}catch(err){setState({aiTip:“KI nicht verfuegbar.”,aiTipL:false});}
 }
 
-async function scanWithAI(text) {
-  setState({ scanStep: "scanning" });
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: `Ausgaben-Parser. Extrahiere alle Ausgaben aus Text/Notizen. Gib NUR JSON zurück ohne Markdown oder Backticks.
-Format: [{"label":"Name","amount":12.50,"icon":"emoji","date":"YYYY-MM-DD"}]
-Emoji-Regeln: 🍽️ Restaurant/Essen gehen, 🌯 Fast Food, ☕ Café/Kaffee, 🚗 Uber/Taxi, 🛴 Bolt/Scooter, ✈️ Flug/Ticket/Transport, 🏛️ Steuer/Gebühr, 🛒 Einkaufen/Supermarkt, 👕 Kleidung, 💊 Apotheke, 🎟️ Eintrittskarte, 🍺 Bar/Alkohol, 🏨 Hotel
-Datum: aus Text extrahieren wenn vorhanden, sonst heute ${new Date().toISOString().split('T')[0]}
-NUR JSON Array zurückgeben.`,
-        messages: [{ role: "user", content: text }]
-      })
-    });
-    const data = await res.json();
-    const raw = (data.content?.[0]?.text || "[]").replace(/```json|```/g, "").trim();
-    const parsed = JSON.parse(raw);
-    setState({ scanResults: parsed.map((e, i) => ({ ...e, id: i, selected: true })), scanStep: "confirm" });
-  } catch {
-    setState({ scanResults: [], scanStep: "confirm" });
-  }
+async function getFcAi(){
+setState({fcAiL:true});
+var f=calcFc();
+try{
+var t=await callAI(“Finanzberater. 2 Saetze Deutsch. Klar.”,“Tag “+f.dom+”/”+f.dim+”. Ausgegeben E”+Math.round(f.ms)+”. Budget E”+S.mb+”. Prognose E”+Math.round(f.fore)+”.”);
+setState({fcAi:t,fcAiL:false});
+}catch(err){setState({fcAi:“KI nicht verfuegbar.”,fcAiL:false});}
 }
 
-async function scanImageWithAI(base64, mimeType) {
-  setState({ scanStep: "scanning", modal: "scan" });
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: `Ausgaben-Parser für Bilder. Lies alle Ausgaben aus dem Bild. Gib NUR JSON zurück.
-Format: [{"label":"Name","amount":12.50,"icon":"emoji","date":"YYYY-MM-DD"}]
-Emoji: 🍽️ Restaurant, 🌯 Fast Food, ☕ Café, 🚗 Uber/Taxi, 🛴 Bolt, ✈️ Ticket/Reise, 🏛️ Steuer, 🛒 Einkaufen, 👕 Kleidung
-Datum aus Bild wenn sichtbar, sonst ${new Date().toISOString().split('T')[0]}
-NUR JSON zurückgeben.`,
-        messages: [{ role: "user", content: [
-          { type: "image", source: { type: "base64", media_type: mimeType, data: base64 }},
-          { type: "text", text: "Extrahiere alle Ausgaben aus diesem Bild als JSON." }
-        ]}]
-      })
-    });
-    const data = await res.json();
-    const raw = (data.content?.[0]?.text || "[]").replace(/```json|```/g, "").trim();
-    const parsed = JSON.parse(raw);
-    setState({ scanResults: parsed.map((e, i) => ({ ...e, id: i, selected: true })), scanStep: "confirm" });
-  } catch {
-    setState({ scanResults: [], scanStep: "confirm" });
-  }
+async function doScan(text, isImg, b64, mime){
+setState({scanStep:“scanning”});
+var sys = ‘NUR JSON Array. Format: [{“label”:“Name”,“amount”:12.5,“icon”:“ICONKEY”,“date”:“YYYY-MM-DD”}]. ICONKEY muss einer dieser sein: cart food coffee car plane fun shirt pill phone gift sport beer hotel fuel cinema book gym music wrap cake scooter ticket tax shoe scissors nail cash beauty barber. Datum aus Input wenn vorhanden, sonst ‘+today()+’.’;
+try{
+var msgs;
+if(isImg){
+msgs=[{role:“user”,content:[{type:“image”,source:{type:“base64”,media_type:mime,data:b64}},{type:“text”,text:“JSON bitte.”}]}];
+} else {
+msgs=[{role:“user”,content:text}];
+}
+var res=await fetch(“https://api.anthropic.com/v1/messages”,{method:“POST”,headers:{“Content-Type”:“application/json”},body:JSON.stringify({model:“claude-sonnet-4-20250514”,max_tokens:600,system:sys,messages:msgs})});
+var d=await res.json();
+var raw=((d.content&&d.content[0])?d.content[0].text:”[]”).replace(/`json|`/g,””).trim();
+var parsed=JSON.parse(raw);
+setState({scanRes:parsed.map(function(e,i){return Object.assign({},e,{id:i,sel:true});})  ,scanStep:“confirm”});
+}catch(err){setState({scanRes:[],scanStep:“confirm”});}
 }
 
-function confirmScan() {
-  state.scanResults.filter(e => e.selected).forEach(e => {
-    addExpense({ label: e.label, amount: e.amount, date: e.date, icon: e.icon || "💶", note: "" });
-  });
-  setState({ modal: null, scanStep: "input", scanText: "", scanResults: [] });
+// DOM helpers
+function el(tag, props, kids){
+var node = document.createElement(tag);
+if(props){
+Object.keys(props).forEach(function(k){
+var v = props[k];
+if(k === “style”) Object.assign(node.style, v);
+else if(k === “cls”) node.className = v;
+else if(k.indexOf(“on”) === 0) node.addEventListener(k.slice(2).toLowerCase(), v);
+else node.setAttribute(k, v);
+});
+}
+if(kids){
+(Array.isArray(kids)?kids:[kids]).forEach(function(c){
+if(c == null) return;
+if(typeof c === “string”) node.appendChild(document.createTextNode(c));
+else node.appendChild(c);
+});
+}
+return node;
+}
+function div(style, kids, extra){
+var props = {style: style};
+if(extra) Object.assign(props, extra);
+return el(“div”, props, kids);
+}
+function txt(t, style){return el(“span”,{style:style},[t]);}
+function btn(label, style, onclick, kids){
+var b = el(“button”,{style:style,onClick:onclick}, kids || (typeof label === “string” ? [label] : null));
+return b;
+}
+function inp(type, val, style, onchange, placeholder){
+var i = el(“input”,{type:type,style:style});
+i.value = val || “”;
+if(placeholder) i.placeholder = placeholder;
+i.addEventListener(“input”, onchange);
+return i;
 }
 
-async function getAiTip() {
-  setState({ aiLoading: true });
-  const top = [...state.expenses].sort((a,b) => b.amount - a.amount).slice(0, 5);
-  const weekTotal = state.expenses.filter(e => isThisWeek(e.date)).reduce((s,e) => s + e.amount, 0);
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: "Du bist ein direkter Finanzberater. 2 Sätze auf Deutsch. Konkret und direkt. Keine Floskeln.",
-        messages: [{ role: "user", content: `Wochenbudget: €${state.weekBudget}. Ausgegeben diese Woche: €${weekTotal.toFixed(0)}. Top Ausgaben: ${top.map(e => e.label + " €" + e.amount).join(", ")}. Spartipp?` }]
-      })
-    });
-    const data = await res.json();
-    setState({ aiMsg: data.content?.[0]?.text || "", aiLoading: false });
-  } catch {
-    setState({ aiMsg: "KI nicht verfügbar.", aiLoading: false });
-  }
+// Colors
+var C = {
+bg: “#000”, s1: “#0C0C0C”, s2: “#161616”, s3: “#1E1E1E”,
+blue: “#2563EB”, blue2: “#3B82F6”, blue3: “#60A5FA”,
+blueDim: “rgba(59,130,246,0.1)”,
+white: “#FFFFFF”, w80: “rgba(255,255,255,0.8)”, w50: “rgba(255,255,255,0.5)”,
+w20: “rgba(255,255,255,0.2)”, w10: “rgba(255,255,255,0.1)”, w05: “rgba(255,255,255,0.05)”,
+green: “#10B981”, greenDim: “rgba(16,185,129,0.12)”,
+orange: “#F59E0B”, orangeDim: “rgba(245,158,11,0.12)”,
+red: “#EF4444”, redDim: “rgba(239,68,68,0.12)”
+};
+
+function card(kids, extra){
+return div(Object.assign({background:C.s1,borderRadius:“18px”,padding:“18px”,border:“1px solid “+C.w10,marginBottom:“10px”},extra||{}), kids);
+}
+
+function progressBar(pct, color){
+return div({background:C.s2,borderRadius:“100px”,height:“5px”,overflow:“hidden”},[
+div({width:Math.min(pct,100)+”%”,height:“100%”,background:color,borderRadius:“100px”,transition:“width .8s cubic-bezier(.16,1,.3,1)”})
+]);
+}
+
+function statusColor(pct){
+return pct < 60 ? C.green : pct < 85 ? C.orange : C.red;
+}
+
+function expRow(exp, i){
+var node = div({background:C.s1,borderRadius:“14px”,padding:“12px 14px”,display:“flex”,alignItems:“center”,gap:“12px”,marginBottom:“8px”,border:“1px solid “+C.w10,transition:“opacity .2s”},null,{cls:“fu”});
+node.style.animationDelay = (i*35)+“ms”;
+var iconBox = div({width:“42px”,height:“42px”,borderRadius:“12px”,background:C.s2,display:“flex”,alignItems:“center”,justifyContent:“center”,fontSize:“20px”,flexShrink:“0”},[ico(exp.icon)]);
+var info = div({flex:“1”,minWidth:“0”},[
+el(“p”,{style:{fontSize:“14px”,fontWeight:“500”,color:C.white,whiteSpace:“nowrap”,overflow:“hidden”,textOverflow:“ellipsis”}},[exp.label]),
+el(“p”,{style:{fontSize:“11px”,color:C.w50,marginTop:“3px”}},[exp.note || new Date(exp.date).toLocaleDateString(“de-DE”,{day:“numeric”,month:“short”})])
+]);
+var amount = txt(fmt(exp.amount),{fontSize:“15px”,fontWeight:“700”,color:C.white,flexShrink:“0”});
+var delBtn = btn(“x”,{background:C.w10,border:“none”,borderRadius:“8px”,width:“26px”,height:“26px”,color:C.w50,fontSize:“15px”,display:“flex”,alignItems:“center”,justifyContent:“center”,flexShrink:“0”},function(){
+S.exp = S.exp.filter(function(x){return x.id !== exp.id;});
+saveExp();
+});
+node.appendChild(iconBox); node.appendChild(info); node.appendChild(amount); node.appendChild(delBtn);
+return node;
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
-function el(tag, attrs, ...children) {
-  const e = document.createElement(tag);
-  if (attrs) Object.entries(attrs).forEach(([k, v]) => {
-    if (k === "style" && typeof v === "object") Object.assign(e.style, v);
-    else if (k.startsWith("on")) e.addEventListener(k.slice(2).toLowerCase(), v);
-    else if (k === "className") e.className = v;
-    else e.setAttribute(k, v);
-  });
-  children.flat().forEach(c => {
-    if (c == null) return;
-    e.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
-  });
-  return e;
+function render(){
+var app = document.getElementById(“app”);
+app.innerHTML = “”;
+
+var ws = S.exp.filter(function(e){return isWeek(e.date);}).reduce(function(s,e){return s+e.amount;},0);
+var ts = S.exp.filter(function(e){return isToday(e.date);}).reduce(function(s,e){return s+e.amount;},0);
+var wp = Math.min((ws/S.wb)*100,100);
+var sc = statusColor(wp);
+var F = calcFc();
+var fcCol = F.diff > 20 ? C.red : F.diff > -50 ? C.orange : C.green;
+
+// HEADER
+var header = div({padding:“52px 20px 12px”,background:“linear-gradient(180deg,#050510 0%,#000 100%)”},[
+div({display:“flex”,justifyContent:“space-between”,alignItems:“center”},[
+div({display:“flex”,alignItems:“center”,gap:“10px”},[
+div({width:“34px”,height:“34px”,borderRadius:“10px”,background:C.blue,display:“flex”,alignItems:“center”,justifyContent:“center”,fontSize:“16px”,fontWeight:“800”,color:”#fff”},[“K”]),
+div(null,[
+el(“p”,{style:{fontSize:“18px”,fontWeight:“700”,letterSpacing:”-0.5px”}},[“Koinonia”]),
+el(“p”,{style:{fontSize:“11px”,color:C.w50,marginTop:“1px”}},[S.flash ? “Gespeichert” : “27. März 2026”])
+])
+]),
+div({display:“flex”,gap:“8px”},[
+btn(“Scan”,{background:C.w10,borderRadius:“12px”,padding:“9px 14px”,color:C.w80,fontSize:“13px”,fontWeight:“600”},function(){setState({modal:“scan”,scanStep:“input”});}),
+btn(”+”,{background:C.blue,borderRadius:“12px”,padding:“9px 18px”,color:”#fff”,fontSize:“16px”,fontWeight:“700”},function(){setState({modal:“add”,form:{label:””,amount:””,date:today(),icon:“cart”,note:””}});})
+])
+])
+]);
+app.appendChild(header);
+
+// TABS
+var tabData = [{id:“home”,label:“Home”},{id:“forecast”,label:“Forecast”},{id:“all”,label:“Alle”}];
+var tabBar = div({display:“flex”,padding:“0 20px 14px”,gap:“6px”},
+tabData.map(function(t){
+var active = S.tab === t.id;
+var b = btn(t.label,{
+flex:“1”,padding:“10px 6px”,borderRadius:“12px”,
+background: active ? C.blue : C.w05,
+color: active ? “#fff” : C.w50,
+fontSize:“13px”,fontWeight:active?“700”:“400”,
+border: active ? “none” : “1px solid “+C.w10,
+transition:“all .2s”
+},function(){setState({tab:t.id});});
+return b;
+})
+);
+app.appendChild(tabBar);
+
+var content = div({padding:“0 20px 80px”},null);
+
+// ── HOME ──
+if(S.tab === “home”){
+// Budget hero
+var hero = card([
+div({display:“flex”,justifyContent:“space-between”,alignItems:“flex-start”,marginBottom:“14px”},[
+div(null,[
+el(“p”,{style:{fontSize:“11px”,color:C.w50,letterSpacing:“1px”,textTransform:“uppercase”,marginBottom:“8px”}},[“Diese Woche”]),
+el(“p”,{style:{fontSize:“34px”,fontWeight:“800”,letterSpacing:”-1.5px”,color:sc,lineHeight:“1”}}, [fmt(ws)]),
+el(“p”,{style:{fontSize:“13px”,color:C.w50,marginTop:“6px”}}, [“von “+fmt(S.wb)])
+]),
+div({textAlign:“right”},[
+el(“p”,{style:{fontSize:“12px”,fontWeight:“600”,color:sc,marginBottom:“6px”}},[
+wp<60?“Im Budget”:wp<85?“Aufpassen”:“Fast erreicht”
+]),
+el(“p”,{style:{fontSize:“12px”,color:C.w50}},[
+(S.wb-ws)>=0 ? fmt(S.wb-ws)+” übrig” : fmt(Math.abs(S.wb-ws))+” überzogen”
+]),
+btn(“Budget”,{marginTop:“8px”,background:C.w10,border:“none”,borderRadius:“8px”,padding:“5px 12px”,color:C.w50,fontSize:“11px”},function(){setState({modal:“budget”});})
+])
+]),
+progressBar(wp, sc),
+div({display:“grid”,gridTemplateColumns:“1fr 1fr 1fr”,gap:“8px”,marginTop:“14px”},[
+div({background:C.w05,borderRadius:“10px”,padding:“10px”,textAlign:“center”},[
+el(“p”,{style:{fontSize:“10px”,color:C.w50,marginBottom:“4px”}},[“Heute”]),
+el(“p”,{style:{fontSize:“15px”,fontWeight:“700”,color:C.white}},[fmt(ts)])
+]),
+div({background:C.w05,borderRadius:“10px”,padding:“10px”,textAlign:“center”},[
+el(“p”,{style:{fontSize:“10px”,color:C.w50,marginBottom:“4px”}},[“Woche”]),
+el(“p”,{style:{fontSize:“15px”,fontWeight:“700”,color:sc}},[fmt(ws)])
+]),
+div({background:C.w05,borderRadius:“10px”,padding:“10px”,textAlign:“center”},[
+el(“p”,{style:{fontSize:“10px”,color:C.w50,marginBottom:“4px”}},[“Monat”]),
+el(“p”,{style:{fontSize:“15px”,fontWeight:“700”,color:C.blue3}},[fmt(F.ms)])
+])
+])
+]);
+content.appendChild(hero);
+
+```
+// KI Tipp
+var tipCard = card([
+  div({display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:S.aiTip?"10px":"0"},[
+    el("p",{style:{fontSize:"11px",fontWeight:"700",color:C.blue3,letterSpacing:"1px",textTransform:"uppercase"}},["KI Spartipp"]),
+    (function(){
+      var b = btn(S.aiTipL?"...":"Analysieren",{background:C.blue,borderRadius:"8px",padding:"6px 14px",color:"#fff",fontSize:"12px",fontWeight:"700"},getTip);
+      return b;
+    })()
+  ]),
+  S.aiTip ? el("p",{style:{fontSize:"13px",color:C.w80,lineHeight:"1.6"}},[S.aiTip]) :
+            el("p",{style:{fontSize:"12px",color:C.w50}},["Tippe Analysieren fuer einen Tipp"])
+]);
+content.appendChild(tipCard);
+
+// Recent
+var recent = S.exp.slice(0, 6);
+if(recent.length > 0){
+  content.appendChild(div({display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px",marginTop:"6px"},[
+    el("p",{style:{fontSize:"12px",color:C.w50,letterSpacing:"0.5px",textTransform:"uppercase",fontWeight:"600"}},["Zuletzt"]),
+    btn("Alle",{background:"none",border:"none",color:C.blue3,fontSize:"12px",fontWeight:"600",padding:"0"},function(){setState({tab:"all"});})
+  ]));
+  recent.forEach(function(ex,i){content.appendChild(expRow(ex,i));});
+} else {
+  content.appendChild(div({textAlign:"center",padding:"40px 0"},[
+    el("p",{style:{fontSize:"40px",marginBottom:"12px"}},["✨"]),
+    el("p",{style:{fontSize:"15px",fontWeight:"600"}},["Noch keine Ausgaben"]),
+    el("p",{style:{fontSize:"13px",color:C.w50,marginTop:"6px"}},["Tippe + oder Scan"])
+  ]));
+}
+```
+
 }
 
-function render() {
-  const app = document.getElementById("app");
-  app.innerHTML = "";
+// ── FORECAST ──
+if(S.tab === “forecast”){
+content.appendChild(div({textAlign:“center”,padding:“20px 0 22px”},[
+el(“p”,{style:{fontSize:“11px”,color:C.w50,letterSpacing:“2px”,textTransform:“uppercase”,marginBottom:“10px”}},[“Prognose Monatsende”]),
+el(“p”,{style:{fontSize:“48px”,fontWeight:“800”,letterSpacing:”-2px”,color:fcCol,lineHeight:“1”}},[fmt(F.fore)]),
+el(“p”,{style:{fontSize:“13px”,color:C.w50,marginTop:“8px”}},[“Budget: “+fmt(S.mb)]),
+div({display:“inline-block”,marginTop:“10px”,background:F.diff>20?C.redDim:F.diff>-50?C.orangeDim:C.greenDim,borderRadius:“20px”,padding:“6px 16px”},[
+el(“p”,{style:{fontSize:“13px”,fontWeight:“700”,color:fcCol}},[
+F.diff>20 ? “Ueberschreitung +”+fmt(F.diff) : F.diff>-50 ? “Knapp im Budget” : “Gut - “+fmt(Math.abs(F.diff))+” Spielraum”
+])
+])
+]));
 
-  const displayExp = getDisplayExp();
-  const todayTotal = state.expenses.filter(e => isToday(e.date)).reduce((s,e) => s + e.amount, 0);
-  const weekTotal = state.expenses.filter(e => isThisWeek(e.date)).reduce((s,e) => s + e.amount, 0);
-  const weekPct = Math.min((weekTotal / state.weekBudget) * 100, 100);
-  const weekRemaining = state.weekBudget - weekTotal;
-  const ampel = weekPct < 60 ? "#4ADE80" : weekPct < 85 ? "#FB923C" : "#F87171";
-  const ampelText = weekPct < 60 ? "✓ Gut im Budget" : weekPct < 85 ? "⚠ Aufpassen" : "⛔ Budget fast erreicht";
+```
+content.appendChild(card([
+  div({display:"flex",justifyContent:"space-between",marginBottom:"10px"},[
+    el("p",{style:{fontSize:"12px",color:C.w50}},["Tag "+F.dom+" / "+F.dim]),
+    el("p",{style:{fontSize:"12px",color:C.blue3}},[Math.round((F.ms/S.mb)*100)+"% verbraucht"])
+  ]),
+  progressBar((F.ms/S.mb)*100, C.blue2),
+  div({display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:"8px",marginTop:"14px"},[
+    div({background:C.w05,borderRadius:"10px",padding:"10px",textAlign:"center"},[el("p",{style:{fontSize:"10px",color:C.w50,marginBottom:"4px"}},["Ausgegeben"]),el("p",{style:{fontSize:"14px",fontWeight:"700"}},[fmt(F.ms)])]),
+    div({background:C.w05,borderRadius:"10px",padding:"10px",textAlign:"center"},[el("p",{style:{fontSize:"10px",color:C.w50,marginBottom:"4px"}},["Pro Tag"]),el("p",{style:{fontSize:"14px",fontWeight:"700",color:C.blue3}},[fmt(F.dr)])]),
+    div({background:C.w05,borderRadius:"10px",padding:"10px",textAlign:"center"},[el("p",{style:{fontSize:"10px",color:C.w50,marginBottom:"4px"}},["Ubrig"]),el("p",{style:{fontSize:"14px",fontWeight:"700",color:F.bl>0?C.green:C.red}},[fmt(Math.max(F.bl,0))])]),
+    div({background:C.w05,borderRadius:"10px",padding:"10px",textAlign:"center"},[el("p",{style:{fontSize:"10px",color:C.w50,marginBottom:"4px"}},["Max/Tag"]),el("p",{style:{fontSize:"14px",fontWeight:"700",color:F.dleft>30?C.green:F.dleft>10?C.orange:C.red}},[fmt(Math.max(F.dleft,0))])])
+  ])
+]));
 
-  // HEADER
-  app.appendChild(el("div", { style: { background:"#111", padding:"16px 20px", borderBottom:"1px solid #222", display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:10 }},
-    el("div", null,
-      el("div", { style: { color:"#F5F5F5", fontWeight:700, fontSize:17 }}, "💶 Ausgaben"),
-      el("div", { style: { color:"#666", fontSize:11, marginTop:2 }}, "Nur variable Kosten · " + (state.savedFlash ? "✓ Gespeichert" : new Date().toLocaleDateString("de-DE")))
-    ),
-    el("div", { style: { display:"flex", gap:8 }},
-      el("button", {
-        style: { background:"rgba(232,197,71,0.12)", border:"1px solid rgba(232,197,71,0.3)", borderRadius:8, padding:"8px 12px", color:"#E8C547", fontWeight:700, fontSize:12 },
-        onClick: () => setState({ modal:"scan", scanStep:"input" })
-      }, "📷 Scan"),
-      el("button", {
-        style: { background:"#E8C547", border:"none", borderRadius:8, padding:"8px 14px", color:"#0A0A0A", fontWeight:700, fontSize:12 },
-        onClick: () => setState({ modal:"add", addForm:{ label:"", amount:"", date: new Date().toISOString().split("T")[0], icon:"🛒", note:"" }})
-      }, "+ Neu")
-    )
-  ));
+content.appendChild(card([
+  div({display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:S.fcAi?"10px":"0"},[
+    el("p",{style:{fontSize:"11px",fontWeight:"700",color:C.blue3,letterSpacing:"1px",textTransform:"uppercase"}},["KI Forecast"]),
+    btn(S.fcAiL?"...":"Analysieren",{background:C.blue,borderRadius:"8px",padding:"6px 14px",color:"#fff",fontSize:"12px",fontWeight:"700"},getFcAi)
+  ]),
+  S.fcAi ? el("p",{style:{fontSize:"13px",color:C.w80,lineHeight:"1.6"}},[S.fcAi]) :
+           el("p",{style:{fontSize:"12px",color:C.w50}},["KI analysiert deine Ausgaben und gibt eine Prognose"])
+]));
 
-  // BUDGET CARD
-  const budgetCard = el("div", { style: { background:"#111", margin:"12px 16px 0", borderRadius:12, padding:"16px", border:"1px solid #222" }},
-    el("div", { style: { display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12 }},
-      el("div", null,
-        el("div", { style: { fontSize:10, color:"#666", letterSpacing:2, textTransform:"uppercase" }}, "Diese Woche"),
-        el("div", { style: { display:"flex", alignItems:"baseline", gap:6, marginTop:4 }},
-          el("span", { style: { fontSize:26, fontWeight:700, color:ampel }}, fmt(weekTotal)),
-          el("span", { style: { fontSize:13, color:"#666" }}, "/ " + fmt(state.weekBudget))
-        )
-      ),
-      el("div", { style: { textAlign:"right" }},
-        el("div", { style: { fontSize:11, color:ampel, fontWeight:600 }}, ampelText),
-        el("div", { style: { fontSize:12, color:"#666", marginTop:2 }}, weekRemaining >= 0 ? fmt(weekRemaining) + " übrig" : fmt(Math.abs(weekRemaining)) + " überzogen"),
-        el("button", {
-          style: { marginTop:6, background:"none", border:"1px solid #333", borderRadius:4, padding:"3px 8px", color:"#666", fontSize:10 },
-          onClick: () => setState({ modal:"budget", budgetInput: String(state.weekBudget) })
-        }, "✎ Budget")
-      )
-    ),
-    el("div", { style: { background:"#222", borderRadius:4, height:8 }},
-      el("div", { style: { width: weekPct + "%", background:ampel, borderRadius:4, height:8, transition:"width 0.5s, background 0.3s" }})
-    ),
-    el("div", { style: { display:"flex", justifyContent:"space-between", marginTop:10 }},
-      el("span", { style: { fontSize:11, color:"#666" }}, "Heute"),
-      el("span", { style: { fontSize:13, fontWeight:700, color:"#F5F5F5" }}, fmt(todayTotal))
-    )
-  );
-  app.appendChild(budgetCard);
+content.appendChild(div({display:"flex",justifyContent:"space-between",alignItems:"center",background:C.s1,borderRadius:"14px",padding:"14px 16px",border:"1px solid "+C.w10},[
+  div(null,[el("p",{style:{fontSize:"11px",color:C.w50,marginBottom:"3px"}},["Monatsbudget"]),el("p",{style:{fontSize:"17px",fontWeight:"700"}},[fmt(S.mb)])]),
+  btn("Aendern",{background:C.w10,border:"none",borderRadius:"10px",padding:"8px 14px",color:C.w80,fontSize:"12px",fontWeight:"600"},function(){setState({modal:"mbudget"});})
+]));
+```
 
-  // KI TIPP
-  const kiCard = el("div", { style: { margin:"10px 16px 0", background:"#181818", borderRadius:10, padding:"12px 14px", border:"1px solid #222" }},
-    el("div", { style: { display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom: state.aiMsg ? 8 : 0 }},
-      el("span", { style: { fontSize:11, color:"#E8C547", fontWeight:600, letterSpacing:1 }}, "⚡ KI SPARTIPP"),
-      el("button", {
-        style: { background:"rgba(232,197,71,0.12)", border:"1px solid rgba(232,197,71,0.2)", borderRadius:6, padding:"4px 10px", color:"#E8C547", fontSize:10, fontWeight:600 },
-        onClick: getAiTip
-      }, state.aiLoading ? "..." : "Analysieren")
-    ),
-    state.aiMsg
-      ? el("div", { style: { fontSize:12, color:"#CCCCCC", lineHeight:1.6 }}, state.aiMsg)
-      : el("div", { style: { fontSize:11, color:"#666" }}, "Klicke Analysieren für einen persönlichen Spartipp")
-  );
-  app.appendChild(kiCard);
+}
 
-  // TABS
-  const tabBar = el("div", { style: { display:"flex", margin:"12px 16px 10px", background:"#111", borderRadius:8, padding:4 }});
-  [{ id:"heute", label:"Heute" }, { id:"woche", label:"Diese Woche" }, { id:"alle", label:"Alle" }].forEach(t => {
-    const active = state.tab === t.id;
-    const btn = el("button", {
-      style: { flex:1, padding:"8px 4px", borderRadius:6, border:"none", background: active ? "#E8C547" : "transparent", color: active ? "#0A0A0A" : "#666", fontSize:12, fontWeight: active ? 700 : 400 },
-      onClick: () => setState({ tab: t.id })
-    }, t.label);
-    tabBar.appendChild(btn);
+// ── ALL ──
+if(S.tab === “all”){
+var total = S.exp.reduce(function(s,e){return s+e.amount;},0);
+content.appendChild(card([
+el(“p”,{style:{fontSize:“11px”,color:C.w50,letterSpacing:“1px”,textTransform:“uppercase”,marginBottom:“8px”}},[“Gesamt”]),
+el(“p”,{style:{fontSize:“32px”,fontWeight:“800”,letterSpacing:”-1px”,color:C.blue3}},[fmt(total)]),
+el(“p”,{style:{fontSize:“12px”,color:C.w50,marginTop:“4px”}},[S.exp.length+” Eintraege”])
+]));
+
+```
+var grp = {};
+S.exp.forEach(function(e){if(!grp[e.date])grp[e.date]=[];grp[e.date].push(e);});
+var todD = today();
+var yesterD = new Date(Date.now()-86400000).toISOString().split("T")[0];
+
+Object.keys(grp).sort(function(a,b){return b.localeCompare(a);}).forEach(function(date, gi){
+  var exps = grp[date];
+  var dt = exps.reduce(function(s,e){return s+e.amount;},0);
+  var lbl = date===todD?"Heute":date===yesterD?"Gestern":date==="2026-03-26"?"26. Maerz - Amsterdam":new Date(date).toLocaleDateString("de-DE",{weekday:"short",day:"numeric",month:"short"});
+
+  content.appendChild(div({display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"8px",marginTop:gi===0?"0":"20px"},[
+    el("p",{style:{fontSize:"11px",color:C.w50,fontWeight:"600",letterSpacing:"0.5px",textTransform:"uppercase"}},[lbl.toUpperCase()]),
+    el("p",{style:{fontSize:"12px",color:C.blue3,fontWeight:"700"}},[fmt(dt)])
+  ]));
+  exps.forEach(function(ex,i){content.appendChild(expRow(ex,i));});
+});
+```
+
+}
+
+app.appendChild(content);
+
+// ── MODALS ──
+if(!S.modal) return;
+
+var overlay = div({position:“fixed”,inset:“0”,background:“rgba(0,0,0,.88)”,backdropFilter:“blur(6px)”,display:“flex”,alignItems:“flex-end”,justifyContent:“center”,zIndex:“200”});
+var sheet = div({background:C.s1,borderRadius:“22px 22px 0 0”,padding:“0 20px 48px”,width:“100%”,maxWidth:“430px”,maxHeight:“92vh”,overflowY:“auto”,border:“1px solid “+C.w10,borderBottom:“none”},null,{cls:“su”});
+
+// Handle bar
+sheet.appendChild(div({width:“36px”,height:“4px”,borderRadius:“2px”,background:C.w20,margin:“12px auto 20px”}));
+
+function sheetHeader(title){
+sheet.appendChild(div({display:“flex”,justifyContent:“space-between”,alignItems:“center”,marginBottom:“20px”},[
+el(“p”,{style:{fontSize:“18px”,fontWeight:“700”}},[title]),
+btn(“x”,{background:C.w10,border:“none”,borderRadius:“50%”,width:“32px”,height:“32px”,color:C.w50,fontSize:“16px”},function(){setState({modal:null,scanStep:“input”});})
+]));
+}
+
+// SCAN
+if(S.modal === “scan”){
+if(S.scanStep === “input”){
+sheetHeader(“Ausgaben scannen”);
+
+```
+  var fi = el("input",{type:"file",accept:"image/*",style:{display:"none"}});
+  fi.addEventListener("change",function(ev){
+    var f=ev.target.files[0]; if(!f) return;
+    var r=new FileReader();
+    r.onload=function(e2){doScan("",true,e2.target.result.split(",")[1],f.type);};
+    r.readAsDataURL(f);
   });
-  app.appendChild(tabBar);
 
-  // EXPENSES LIST
-  const list = el("div", { style: { padding:"0 16px 120px" }});
+  var uploadBox = div({border:"2px dashed "+C.w20,borderRadius:"16px",padding:"28px 20px",textAlign:"center",marginBottom:"14px",cursor:"pointer"},[
+    el("p",{style:{fontSize:"36px",marginBottom:"10px"}},["📷"]),
+    el("p",{style:{fontSize:"15px",fontWeight:"600",color:C.blue3}},["Foto hochladen"]),
+    el("p",{style:{fontSize:"12px",color:C.w50,marginTop:"4px"}},["Notiz oder Kassenbon"])
+  ]);
+  uploadBox.onclick = function(){fi.click();};
+  sheet.appendChild(uploadBox);
+  sheet.appendChild(fi);
 
-  if (displayExp.length === 0) {
-    list.appendChild(el("div", { style: { textAlign:"center", padding:"50px 0", color:"#666" }},
-      el("div", { style: { fontSize:40, marginBottom:12 }}, "✨"),
-      el("div", { style: { fontSize:14 }}, "Keine Ausgaben"),
-      el("div", { style: { fontSize:12, marginTop:4 }}, "Scan oder + Neu drücken")
-    ));
+  sheet.appendChild(el("p",{style:{color:C.w20,fontSize:"12px",textAlign:"center",marginBottom:"12px"}},["oder Text eingeben"]));
+
+  var ta = el("textarea",{style:{width:"100%",background:C.s2,border:"1px solid "+C.w10,borderRadius:"14px",padding:"14px",color:C.white,fontSize:"13px",resize:"none",height:"80px"}});
+  ta.placeholder = "Amsterdam: Ticket 43, Essen 25, Uber 23";
+  ta.addEventListener("input",function(ev){S.scanText=ev.target.value;});
+  sheet.appendChild(ta);
+
+  sheet.appendChild(div({display:"flex",gap:"10px",marginTop:"14px"},[
+    btn("Abbrechen",{flex:"1",padding:"14px",borderRadius:"14px",background:C.w10,color:C.w50,fontSize:"14px"},function(){setState({modal:null});}),
+    btn("KI analysieren",{flex:"2",padding:"14px",borderRadius:"14px",background:C.blue,color:"#fff",fontSize:"14px",fontWeight:"700"},function(){doScan(S.scanText,false);})
+  ]));
+}
+
+if(S.scanStep === "scanning"){
+  sheet.appendChild(div({textAlign:"center",padding:"50px 0"},[
+    el("p",{style:{fontSize:"48px",marginBottom:"16px"}},["🔍"]),
+    el("p",{style:{fontSize:"16px",fontWeight:"600",marginBottom:"16px"}},["KI analysiert..."]),
+    div({display:"flex",justifyContent:"center",gap:"8px"},[
+      div({width:"8px",height:"8px",borderRadius:"50%",background:C.blue,animation:"dot 1.2s ease-in-out 0s infinite"}),
+      div({width:"8px",height:"8px",borderRadius:"50%",background:C.blue,animation:"dot 1.2s ease-in-out .2s infinite"}),
+      div({width:"8px",height:"8px",borderRadius:"50%",background:C.blue,animation:"dot 1.2s ease-in-out .4s infinite"})
+    ])
+  ]));
+}
+
+if(S.scanStep === "confirm"){
+  sheetHeader("Erkannte Ausgaben");
+  if(S.scanRes.length === 0){
+    sheet.appendChild(el("p",{style:{color:C.w50,textAlign:"center",padding:"20px 0"}},["Nichts erkannt"]));
   } else {
-    // Group by date
-    const grouped = {};
-    displayExp.forEach(e => {
-      const d = e.date;
-      if (!grouped[d]) grouped[d] = [];
-      grouped[d].push(e);
+    S.scanRes.forEach(function(ex){
+      var row = div({background:ex.sel?C.blueDim:C.s2,border:"1px solid "+(ex.sel?"rgba(59,130,246,.3)":C.w10),borderRadius:"14px",padding:"12px 14px",display:"flex",alignItems:"center",gap:"12px",marginBottom:"8px",cursor:"pointer",transition:"all .2s"},[
+        el("p",{style:{fontSize:"22px"}},[ico(ex.icon||"cart")]),
+        div({flex:"1"},[
+          el("p",{style:{fontSize:"14px",fontWeight:"500"}},[ex.label]),
+          el("p",{style:{fontSize:"11px",color:C.w50,marginTop:"2px"}},[ex.date])
+        ]),
+        el("p",{style:{fontSize:"14px",fontWeight:"700"}},[fmt(ex.amount)]),
+        el("p",{style:{fontSize:"20px",color:ex.sel?C.green:C.w20}},[ex.sel?"✓":"○"])
+      ]);
+      row.onclick = function(){
+        S.scanRes = S.scanRes.map(function(x){return x.id===ex.id?Object.assign({},x,{sel:!x.sel}):x;});
+        render();
+      };
+      sheet.appendChild(row);
     });
-
-    Object.entries(grouped).sort(([a],[b]) => b.localeCompare(a)).forEach(([date, exps]) => {
-      const dayTotal = exps.reduce((s,e) => s + e.amount, 0);
-      const dateLabel = date === new Date().toISOString().split("T")[0] ? "Heute" :
-                        date === "2026-03-26" ? "Gestern · Amsterdam + Geburtstag 💍" :
-                        new Date(date).toLocaleDateString("de-DE", { weekday:"short", day:"numeric", month:"short" });
-
-      list.appendChild(el("div", { style: { display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8, marginTop:16 }},
-        el("span", { style: { fontSize:11, color:"#666", letterSpacing:0.5 }}, dateLabel.toUpperCase()),
-        el("span", { style: { fontSize:11, color:"#E8C547", fontWeight:600 }}, fmt(dayTotal))
-      ));
-
-      exps.forEach(e => {
-        const row = el("div", { className:"slide-in", style: { background:"#111", border:"1px solid #222", borderRadius:10, padding:"12px 14px", display:"flex", alignItems:"center", gap:12, marginBottom:6 }},
-          el("div", { style: { fontSize:24, lineHeight:1, flexShrink:0 }}, e.icon || "💶"),
-          el("div", { style: { flex:1, minWidth:0 }},
-            el("div", { style: { color:"#F5F5F5", fontSize:14, fontWeight:500, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}, e.label),
-            e.note ? el("div", { style: { fontSize:11, color:"#666", marginTop:2 }}, e.note) : null
-          ),
-          el("div", { style: { color:"#E8C547", fontWeight:700, fontSize:15, flexShrink:0 }}, fmt(e.amount)),
-          el("button", {
-            style: { background:"none", border:"none", color:"#444", fontSize:18, padding:"0 4px", flexShrink:0 },
-            onClick: () => deleteExpense(e.id)
-          }, "✕")
-        );
-        list.appendChild(row);
+  }
+  var st = S.scanRes.filter(function(x){return x.sel;}).reduce(function(s,e){return s+e.amount;},0);
+  sheet.appendChild(div({display:"flex",justifyContent:"space-between",borderTop:"1px solid "+C.w10,paddingTop:"12px",marginBottom:"14px"},[
+    el("p",{style:{fontSize:"12px",color:C.w50}},[S.scanRes.filter(function(x){return x.sel;}).length+" ausgewaehlt"]),
+    el("p",{style:{fontSize:"14px",fontWeight:"700",color:C.blue3}},[fmt(st)])
+  ]));
+  sheet.appendChild(div({display:"flex",gap:"10px"},[
+    btn("Zurueck",{flex:"1",padding:"14px",borderRadius:"14px",background:C.w10,color:C.w50,fontSize:"14px"},function(){setState({scanStep:"input"});}),
+    btn("Uebernehmen",{flex:"2",padding:"14px",borderRadius:"14px",background:C.green,color:"#fff",fontSize:"14px",fontWeight:"700"},function(){
+      S.scanRes.filter(function(x){return x.sel;}).forEach(function(ex){
+        S.exp.unshift({label:ex.label,amount:ex.amount,date:ex.date,icon:ex.icon||"cart",note:"",id:Date.now()+Math.random()});
       });
+      saveExp();
+      setState({modal:null,scanStep:"input",scanRes:[]});
+    })
+  ]));
+}
+```
+
+}
+
+// ADD
+if(S.modal === “add”){
+sheetHeader(“Ausgabe hinzufuegen”);
+
+```
+var iconGrid = div({display:"flex",flexWrap:"wrap",gap:"6px",marginBottom:"16px"},
+  ICONS.map(function(k){
+    var b = btn(ico(k),{
+      width:"40px",height:"40px",borderRadius:"11px",
+      border:"2px solid "+(S.form.icon===k?C.blue:"transparent"),
+      background:S.form.icon===k?C.blueDim:C.s2,
+      fontSize:"19px",transition:"all .15s"
+    },function(){setState({form:Object.assign({},S.form,{icon:k})});});
+    return b;
+  })
+);
+sheet.appendChild(iconGrid);
+
+[{k:"label",ph:"Bezeichnung",t:"text"},{k:"amount",ph:"Betrag",t:"number"},{k:"date",ph:"Datum",t:"date"},{k:"note",ph:"Notiz (optional)",t:"text"}].forEach(function(f){
+  var i = el("input",{type:f.t,style:{width:"100%",background:C.s2,border:"1px solid "+C.w10,borderRadius:"14px",padding:"14px 16px",color:C.white,fontSize:"15px",marginBottom:"10px"}});
+  i.placeholder = f.ph;
+  i.value = S.form[f.k] || "";
+  i.addEventListener("input",function(ev){S.form=Object.assign({},S.form);S.form[f.k]=ev.target.value;});
+  sheet.appendChild(i);
+});
+
+sheet.appendChild(div({display:"flex",gap:"10px",marginTop:"6px"},[
+  btn("Abbrechen",{flex:"1",padding:"14px",borderRadius:"14px",background:C.w10,color:C.w50,fontSize:"15px"},function(){setState({modal:null});}),
+  btn("Speichern",{flex:"1",padding:"14px",borderRadius:"14px",background:C.blue,color:"#fff",fontSize:"15px",fontWeight:"700"},function(){
+    if(!S.form.label||!S.form.amount) return;
+    S.exp.unshift({label:S.form.label,amount:parseFloat(S.form.amount),date:S.form.date||today(),icon:S.form.icon,note:S.form.note||"",id:Date.now()});
+    saveExp();
+    setState({modal:null});
+  })
+]));
+```
+
+}
+
+// BUDGET
+if(S.modal === “budget” || S.modal === “mbudget”){
+var isM = S.modal === “mbudget”;
+sheetHeader(isM ? “Monatsbudget” : “Wochenbudget”);
+
+```
+var bInp = el("input",{type:"number",style:{width:"100%",background:C.s2,border:"2px solid "+C.blue,borderRadius:"16px",padding:"18px 20px",color:C.blue3,fontSize:"32px",fontWeight:"800",textAlign:"center",marginBottom:"14px"}});
+bInp.value = isM ? S.mb : S.wb;
+bInp.addEventListener("input",function(ev){
+  var v = parseFloat(ev.target.value)||400;
+  if(isM) S.mb=v; else S.wb=v;
+});
+sheet.appendChild(bInp);
+
+var presets = isM ? [1000,1200,1500,2000] : [200,300,400,500];
+sheet.appendChild(div({display:"flex",gap:"8px",marginBottom:"20px"},
+  presets.map(function(pv){
+    var cur = isM ? S.mb : S.wb;
+    return btn("€"+pv,{flex:"1",padding:"11px",borderRadius:"12px",border:"1px solid "+(cur===pv?C.blue:C.w10),background:cur===pv?C.blueDim:C.s2,color:cur===pv?C.blue3:C.w50,fontSize:"13px",fontWeight:"600",transition:"all .2s"},function(){
+      if(isM) S.mb=pv; else S.wb=pv;
+      render();
     });
+  })
+));
+sheet.appendChild(btn("Speichern",{width:"100%",padding:"15px",borderRadius:"14px",background:C.blue,color:"#fff",fontSize:"16px",fontWeight:"700"},function(){
+  if(isM) db.set("koin5-mb",S.mb); else db.set("koin5-wb",S.wb);
+  setState({modal:null});
+}));
+```
 
-    // Total
-    const total = displayExp.reduce((s,e) => s + e.amount, 0);
-    list.appendChild(el("div", { style: { marginTop:12, padding:"12px 14px", background:"rgba(232,197,71,0.08)", border:"1px solid rgba(232,197,71,0.2)", borderRadius:10, display:"flex", justifyContent:"space-between" }},
-      el("span", { style: { color:"#666", fontSize:12 }}, "GESAMT " + (state.tab === "heute" ? "HEUTE" : state.tab === "woche" ? "DIESE WOCHE" : "ALLE")),
-      el("span", { style: { color:"#E8C547", fontWeight:700, fontSize:16 }}, fmt(total))
-    ));
-  }
-  app.appendChild(list);
+}
 
-  // ── MODALS ──────────────────────────────────────────────────────────────────
-  if (state.modal) {
-    const overlay = el("div", { style: { position:"fixed", inset:0, background:"rgba(0,0,0,0.92)", display:"flex", alignItems:"flex-end", justifyContent:"center", zIndex:100 }});
-    const sheet = el("div", { style: { background:"#111", border:"1px solid #222", borderRadius:"16px 16px 0 0", padding:"24px 20px 40px", width:"100%", maxWidth:480, maxHeight:"90vh", overflowY:"auto" }});
-
-    // SCAN MODAL
-    if (state.modal === "scan") {
-      if (state.scanStep === "input") {
-        sheet.appendChild(el("div", { style: { display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }},
-          el("div", { style: { color:"#F5F5F5", fontWeight:700, fontSize:15 }}, "📷 Ausgaben scannen"),
-          el("button", { style: { background:"none", border:"none", color:"#666", fontSize:22 }, onClick: () => setState({ modal:null, scanStep:"input" }) }, "✕")
-        ));
-
-        // Upload
-        const fileInput = el("input", { type:"file", accept:"image/*", style:{ display:"none" }});
-        fileInput.addEventListener("change", e => {
-          const file = e.target.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = ev => scanImageWithAI(ev.target.result.split(",")[1], file.type);
-          reader.readAsDataURL(file);
-        });
-
-        const uploadBox = el("div", { style: { border:"2px dashed rgba(232,197,71,0.3)", borderRadius:12, padding:"24px", textAlign:"center", marginBottom:16, background:"rgba(232,197,71,0.05)" },
-          onClick: () => fileInput.click()
-        },
-          el("div", { style: { fontSize:40, marginBottom:8 }}, "📷"),
-          el("div", { style: { color:"#E8C547", fontWeight:600, fontSize:13 }}, "Foto hochladen"),
-          el("div", { style: { color:"#666", fontSize:11, marginTop:4 }}, "Notiz · Kassenbon · Screenshot")
-        );
-        sheet.appendChild(uploadBox);
-        sheet.appendChild(fileInput);
-
-        sheet.appendChild(el("div", { style: { color:"#444", fontSize:11, textAlign:"center", marginBottom:12 }}, "— oder Text eingeben —"));
-
-        const ta = el("textarea", { style: { width:"100%", background:"#181818", border:"1px solid #333", borderRadius:8, padding:"12px", color:"#F5F5F5", fontSize:13, outline:"none", resize:"none", height:90 }});
-        ta.placeholder = "z.B. Amsterdam: Ticket 43, Essen 25, Uber 23\noder: Coffee 5, Restaurant 45, Taxi 15";
-        ta.addEventListener("input", e => { state.scanText = e.target.value; });
-        sheet.appendChild(ta);
-
-        sheet.appendChild(el("div", { style: { display:"flex", gap:8, marginTop:12 }},
-          el("button", { style: { flex:1, padding:12, borderRadius:8, border:"1px solid #333", background:"transparent", color:"#666", fontSize:13 }, onClick: () => setState({ modal:null }) }, "Abbrechen"),
-          el("button", { style: { flex:2, padding:12, borderRadius:8, border:"none", background:"#E8C547", color:"#0A0A0A", fontWeight:700, fontSize:13 }, onClick: () => scanWithAI(state.scanText) }, "KI analysieren →")
-        ));
-      }
-
-      if (state.scanStep === "scanning") {
-        sheet.appendChild(el("div", { style: { textAlign:"center", padding:"40px 0" }},
-          el("div", { style: { fontSize:48, marginBottom:16 }}, "🔍"),
-          el("div", { style: { color:"#F5F5F5", fontSize:15, fontWeight:600, marginBottom:8 }}, "KI analysiert..."),
-          el("div", { style: { color:"#666", fontSize:12 }}, "Ausgaben werden erkannt"),
-          el("div", { style: { display:"flex", gap:8, justifyContent:"center", marginTop:20 }},
-            ...[0,1,2].map(i => el("div", { style: { width:10, height:10, borderRadius:"50%", background:"#E8C547", animation:`pulse 1.2s ease-in-out ${i*0.2}s infinite` }}))
-          )
-        ));
-      }
-
-      if (state.scanStep === "confirm") {
-        sheet.appendChild(el("div", { style: { display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }},
-          el("div", { style: { color:"#F5F5F5", fontWeight:700, fontSize:15 }}, "✓ Erkannte Ausgaben"),
-          el("button", { style: { background:"none", border:"none", color:"#666", fontSize:22 }, onClick: () => setState({ modal:null, scanStep:"input" }) }, "✕")
-        ));
-
-        if (state.scanResults.length === 0) {
-          sheet.appendChild(el("div", { style: { color:"#666", textAlign:"center", padding:"20px 0" }}, "Keine Ausgaben erkannt · Erneut versuchen"));
-        } else {
-          state.scanResults.forEach(e => {
-            const row = el("div", {
-              style: { background: e.selected ? "rgba(232,197,71,0.08)" : "#181818", border:`1px solid ${e.selected ? "rgba(232,197,71,0.3)" : "#222"}`, borderRadius:8, padding:"12px 14px", display:"flex", alignItems:"center", gap:10, marginBottom:6 },
-              onClick: () => {
-                state.scanResults = state.scanResults.map(x => x.id === e.id ? { ...x, selected: !x.selected } : x);
-                render();
-              }
-            },
-              el("div", { style: { fontSize:22 }}, e.icon || "💶"),
-              el("div", { style: { flex:1 }},
-                el("div", { style: { color:"#F5F5F5", fontSize:13, fontWeight:500 }}, e.label),
-                el("div", { style: { color:"#666", fontSize:11, marginTop:2 }}, e.date)
-              ),
-              el("div", { style: { color:"#E8C547", fontWeight:700, fontSize:14 }}, fmt(e.amount)),
-              el("div", { style: { color: e.selected ? "#4ADE80" : "#444", fontSize:18 }}, e.selected ? "✓" : "○")
-            );
-            sheet.appendChild(row);
-          });
-        }
-
-        const selTotal = state.scanResults.filter(e => e.selected).reduce((s,e) => s + e.amount, 0);
-        sheet.appendChild(el("div", { style: { borderTop:"1px solid #222", paddingTop:12, marginTop:4, display:"flex", justifyContent:"space-between", marginBottom:12 }},
-          el("span", { style: { color:"#666", fontSize:12 }}, state.scanResults.filter(e => e.selected).length + " Ausgaben ausgewählt"),
-          el("span", { style: { color:"#E8C547", fontWeight:700 }}, fmt(selTotal))
-        ));
-
-        sheet.appendChild(el("div", { style: { display:"flex", gap:8 }},
-          el("button", { style: { flex:1, padding:12, borderRadius:8, border:"1px solid #333", background:"transparent", color:"#666", fontSize:13 }, onClick: () => setState({ scanStep:"input" }) }, "← Zurück"),
-          el("button", { style: { flex:2, padding:12, borderRadius:8, border:"none", background:"#4ADE80", color:"#0A0A0A", fontWeight:700, fontSize:13 }, onClick: confirmScan }, "Alle übernehmen ✓")
-        ));
-      }
-    }
-
-    // ADD MODAL
-    if (state.modal === "add") {
-      sheet.appendChild(el("div", { style: { display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }},
-        el("div", { style: { color:"#F5F5F5", fontWeight:700, fontSize:15 }}, "Ausgabe hinzufügen"),
-        el("button", { style: { background:"none", border:"none", color:"#666", fontSize:22 }, onClick: () => setState({ modal:null }) }, "✕")
-      ));
-
-      // Icon picker
-      const iconGrid = el("div", { style: { display:"flex", flexWrap:"wrap", gap:6, marginBottom:14 }});
-      ICONS.forEach(ic => {
-        const btn = el("button", {
-          style: { width:38, height:38, borderRadius:8, border:`1px solid ${state.addForm.icon === ic ? "#E8C547" : "#333"}`, background: state.addForm.icon === ic ? "rgba(232,197,71,0.12)" : "#181818", fontSize:18 },
-          onClick: () => setState({ addForm: { ...state.addForm, icon: ic }})
-        }, ic);
-        iconGrid.appendChild(btn);
-      });
-      sheet.appendChild(iconGrid);
-
-      [
-        { key:"label", placeholder:"Bezeichnung", type:"text" },
-        { key:"amount", placeholder:"Betrag (€)", type:"number" },
-        { key:"date", placeholder:"Datum", type:"date" },
-        { key:"note", placeholder:"Notiz (optional)", type:"text" },
-      ].forEach(f => {
-        const inp = el("input", { type:f.type, style: { width:"100%", background:"#181818", border:"1px solid #333", borderRadius:8, padding:"11px 12px", color:"#F5F5F5", fontSize:13, marginBottom:8, outline:"none" }});
-        inp.placeholder = f.placeholder;
-        inp.value = state.addForm[f.key];
-        inp.addEventListener("input", e => { state.addForm = { ...state.addForm, [f.key]: e.target.value }; });
-        sheet.appendChild(inp);
-      });
-
-      sheet.appendChild(el("div", { style: { display:"flex", gap:8, marginTop:8 }},
-        el("button", { style: { flex:1, padding:12, borderRadius:8, border:"1px solid #333", background:"transparent", color:"#666", fontSize:13 }, onClick: () => setState({ modal:null }) }, "Abbrechen"),
-        el("button", { style: { flex:1, padding:12, borderRadius:8, border:"none", background:"#E8C547", color:"#0A0A0A", fontWeight:700, fontSize:13 }, onClick: () => {
-          if (!state.addForm.label || !state.addForm.amount) return;
-          addExpense({ ...state.addForm, amount: parseFloat(state.addForm.amount) });
-          setState({ modal:null });
-        }}, "Speichern ✓")
-      ));
-    }
-
-    // BUDGET MODAL
-    if (state.modal === "budget") {
-      sheet.appendChild(el("div", { style: { color:"#F5F5F5", fontWeight:700, fontSize:15, marginBottom:6 }}, "Wochenbudget"));
-      sheet.appendChild(el("div", { style: { color:"#666", fontSize:12, marginBottom:16 }}, "Nur für variable Ausgaben · Fixkosten ausgenommen"));
-
-      const inp = el("input", { type:"number", style: { width:"100%", background:"#181818", border:"1px solid #E8C547", borderRadius:10, padding:"16px", color:"#E8C547", fontSize:28, fontWeight:700, outline:"none", textAlign:"center" }});
-      inp.value = state.budgetInput;
-      inp.addEventListener("input", e => { state.budgetInput = e.target.value; });
-      sheet.appendChild(inp);
-
-      const presets = [200, 300, 400, 500];
-      const presetRow = el("div", { style: { display:"flex", gap:8, marginTop:12, marginBottom:16 }});
-      presets.forEach(p => {
-        presetRow.appendChild(el("button", {
-          style: { flex:1, padding:"8px", borderRadius:6, border:`1px solid ${state.weekBudget === p ? "#E8C547" : "#333"}`, background: state.weekBudget === p ? "rgba(232,197,71,0.12)" : "transparent", color: state.weekBudget === p ? "#E8C547" : "#666", fontSize:12 },
-          onClick: () => { state.budgetInput = String(p); render(); }
-        }, "€" + p));
-      });
-      sheet.appendChild(presetRow);
-
-      sheet.appendChild(el("div", { style: { display:"flex", gap:8 }},
-        el("button", { style: { flex:1, padding:12, borderRadius:8, border:"1px solid #333", background:"transparent", color:"#666", fontSize:13 }, onClick: () => setState({ modal:null }) }, "Abbrechen"),
-        el("button", { style: { flex:1, padding:12, borderRadius:8, border:"none", background:"#E8C547", color:"#0A0A0A", fontWeight:700, fontSize:13 }, onClick: () => {
-          saveData("lf-budget-v2", parseFloat(state.budgetInput) || 400);
-          setState({ modal:null, weekBudget: parseFloat(state.budgetInput) || 400 });
-        }}, "Speichern")
-      ));
-    }
-
-    overlay.appendChild(sheet);
-    overlay.addEventListener("click", e => { if (e.target === overlay) setState({ modal:null, scanStep:"input" }); });
-    app.appendChild(overlay);
-  }
+overlay.appendChild(sheet);
+overlay.addEventListener(“click”,function(ev){if(ev.target===overlay)setState({modal:null,scanStep:“input”});});
+app.appendChild(overlay);
 }
 
 render();
