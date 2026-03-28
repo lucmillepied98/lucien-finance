@@ -189,22 +189,31 @@ input,textarea{font-family:inherit;outline:none;-webkit-appearance:none}
     <input id="sp-amt" type="number" inputmode="decimal" class="inp" placeholder="Gesamtbetrag">
     <input id="sp-desc" type="text" class="inp" placeholder="Beschreibung z.B. Abendessen">
     <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:8px">Personen</div>
-    <div style="display:flex;gap:6px;margin-bottom:16px" id="sp-btns">
+    <div style="display:flex;gap:6px;margin-bottom:14px" id="sp-btns">
       <button class="preset on" data-n="2">2</button>
       <button class="preset" data-n="3">3</button>
       <button class="preset" data-n="4">4</button>
       <button class="preset" data-n="5">5</button>
       <button class="preset" data-n="6">6</button>
     </div>
+    <div id="sp-names-area" style="margin-bottom:12px"></div>
     <button id="sp-go" class="btn-full">Berechnen</button>
   </div>
-  <div class="card" id="split-result-card" style="display:none;text-align:center;padding:20px">
-    <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:6px">PRO PERSON</div>
-    <div id="sp-per" style="font-size:46px;font-weight:800;letter-spacing:-2px;color:#10B981">&#8364; 0</div>
-    <div id="sp-sub" style="font-size:12px;color:rgba(255,255,255,.35);margin-top:6px"></div>
+  <div class="card" id="split-result-card" style="display:none">
+    <div style="text-align:center;padding:8px 0 14px">
+      <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:6px;text-transform:uppercase">Gesamt</div>
+      <div id="sp-total-big" style="font-size:36px;font-weight:800;letter-spacing:-1.5px;color:#fff">&#8364; 0</div>
+      <div id="sp-sub" style="font-size:12px;color:rgba(255,255,255,.35);margin-top:4px"></div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:12px">
+      <div id="split-people-list"></div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:10px;margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;color:rgba(255,255,255,.35)">Nicht aufgeteilt</span>
+      <span id="sp-remainder" style="font-size:14px;font-weight:700;color:#10B981">&#8364; 0</span>
+    </div>
   </div>
-  <div class="card" id="split-list-card" style="display:none;padding:8px 14px"></div>
-  <button id="sp-share" class="btn-full" style="display:none;background:#10B981;margin-top:4px">Link teilen</button>
+  <button id="sp-share" class="btn-full" style="display:none;background:#10B981;margin-top:8px">Link teilen</button>
   <button id="sp-reset" style="display:none;width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);font-size:14px;margin-top:8px">Neue Berechnung</button>
 </div>
 
@@ -636,7 +645,15 @@ function openAdd() {
     if (!lbl || !amt || isNaN(amt)) return;
     EXP.unshift({ id: Date.now(), label:lbl, amount:amt, date:date, icon:SICON, note:note });
     lsSet('kn11-exp', EXP);
-    closeModal(); draw();
+    var splitWords = ['restaurant','uber','bolt','taxi','essen','dinner','lunch','pizza','sushi','bar','drinks','rechnung','hotel','airbnb'];
+    var isSplittable = splitWords.some(function(w){ return lbl.toLowerCase().indexOf(w) !== -1; });
+    if(isSplittable) {
+      closeModal();
+      draw();
+      setTimeout(function(){ openSplitSuggest(lbl, amt); }, 300);
+    } else {
+      closeModal(); draw();
+    }
   });
   r2.appendChild(ca); r2.appendChild(sv);
   body.appendChild(r2);
@@ -698,52 +715,155 @@ function openReset() {
 }
 
 // ── SPLIT ─────────────────────────────────────────────────────────────────────
+var SP_PEOPLE = []; // [{name, amount, locked}]
+
+function buildNamesArea() {
+  var area = g('sp-names-area'); area.innerHTML = '';
+  for (var i = 0; i < SP_N; i++) {
+    var row = el('div'); row.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;align-items:center';
+    var ic = el('div'); ic.style.cssText = 'width:32px;height:32px;min-width:32px;border-radius:8px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:14px';
+    ic.textContent = '\uD83D\uDC64';
+    var inp = el('input'); inp.type = 'text'; inp.className = 'inp';
+    inp.style.cssText = 'margin:0;flex:1;padding:9px 12px;font-size:14px';
+    inp.placeholder = 'Person ' + (i+1);
+    if (SP_PEOPLE[i]) inp.value = SP_PEOPLE[i].name || '';
+    inp.setAttribute('data-idx', i);
+    inp.addEventListener('input', function() {
+      var idx = parseInt(this.getAttribute('data-idx'));
+      if (!SP_PEOPLE[idx]) SP_PEOPLE[idx] = {name:'',amount:0,locked:false};
+      SP_PEOPLE[idx].name = this.value;
+    });
+    row.appendChild(ic); row.appendChild(inp);
+    area.appendChild(row);
+  }
+}
+
 g('sp-btns').querySelectorAll('button').forEach(function(btn) {
   btn.addEventListener('click', function() {
     SP_N = parseInt(btn.getAttribute('data-n'));
     g('sp-btns').querySelectorAll('button').forEach(function(b) { b.classList.remove('on'); });
     btn.classList.add('on');
+    // Init people array
+    SP_PEOPLE = [];
+    for (var i = 0; i < SP_N; i++) SP_PEOPLE.push({name:'', amount:0, locked:false});
+    buildNamesArea();
   });
 });
+
+// Init names on load
+(function() {
+  SP_PEOPLE = [];
+  for (var i = 0; i < SP_N; i++) SP_PEOPLE.push({name:'', amount:0, locked:false});
+  buildNamesArea();
+})();
+
+function buildSplitResult(amt, desc) {
+  var per = Math.round(amt / SP_N * 100) / 100;
+  // Set default equal amounts
+  SP_PEOPLE.forEach(function(p) { if(!p.locked) p.amount = per; });
+
+  g('sp-total-big').textContent = fmt(amt);
+  g('sp-sub').textContent = desc + ' / ' + SP_N + ' Personen';
+
+  renderPeopleList(amt);
+
+  g('split-input-card').style.display = 'none';
+  g('split-result-card').style.display = 'block';
+  g('sp-share').style.display = 'block';
+  g('sp-reset').style.display = 'block';
+}
+
+function renderPeopleList(totalAmt) {
+  var list = g('split-people-list'); list.innerHTML = '';
+  var totalAssigned = 0;
+
+  SP_PEOPLE.forEach(function(person, i) {
+    totalAssigned += person.amount;
+
+    var row = el('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)';
+
+    var ic = el('div');
+    ic.style.cssText = 'width:36px;height:36px;min-width:36px;border-radius:10px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:16px';
+    ic.textContent = '\uD83D\uDC64';
+
+    var inf = el('div'); inf.style.flex = '1';
+    var nm = el('div'); nm.style.cssText = 'font-size:14px;font-weight:600';
+    nm.textContent = person.name || ('Person ' + (i+1));
+    inf.appendChild(nm);
+
+    // Amount input
+    var amtWrap = el('div'); amtWrap.style.cssText = 'display:flex;align-items:center;gap:6px';
+
+    var minus = el('button');
+    minus.style.cssText = 'width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-size:16px;display:flex;align-items:center;justify-content:center';
+    minus.textContent = '-';
+
+    var amtInp = el('input'); amtInp.type = 'number'; amtInp.setAttribute('inputmode','decimal');
+    amtInp.style.cssText = 'width:70px;background:#1a1a1a;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:5px 8px;color:#fff;font-size:14px;font-weight:700;text-align:center';
+    amtInp.value = person.amount.toFixed(2);
+
+    var plus = el('button');
+    plus.style.cssText = 'width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-size:16px;display:flex;align-items:center;justify-content:center';
+    plus.textContent = '+';
+
+    (function(idx, inp) {
+      minus.addEventListener('click', function() {
+        var v = Math.max(0, parseFloat(inp.value||0) - 1);
+        inp.value = v.toFixed(2);
+        SP_PEOPLE[idx].amount = v;
+        SP_PEOPLE[idx].locked = true;
+        renderPeopleList(totalAmt);
+      });
+      plus.addEventListener('click', function() {
+        var v = parseFloat(inp.value||0) + 1;
+        inp.value = v.toFixed(2);
+        SP_PEOPLE[idx].amount = v;
+        SP_PEOPLE[idx].locked = true;
+        renderPeopleList(totalAmt);
+      });
+      inp.addEventListener('change', function() {
+        SP_PEOPLE[idx].amount = parseFloat(inp.value)||0;
+        SP_PEOPLE[idx].locked = true;
+        renderPeopleList(totalAmt);
+      });
+    })(i, amtInp);
+
+    amtWrap.appendChild(minus); amtWrap.appendChild(amtInp); amtWrap.appendChild(plus);
+    row.appendChild(ic); row.appendChild(inf); row.appendChild(amtWrap);
+    list.appendChild(row);
+  });
+
+  // Show remainder
+  var rem = Math.round((totalAmt - totalAssigned) * 100) / 100;
+  var remEl = g('sp-remainder');
+  remEl.textContent = fmt(Math.abs(rem));
+  remEl.style.color = Math.abs(rem) < 0.01 ? '#10B981' : rem > 0 ? '#F59E0B' : '#EF4444';
+  remEl.previousSibling && (remEl.previousSibling.textContent = rem >= 0 ? 'Nicht aufgeteilt' : 'Zu viel aufgeteilt');
+}
 
 g('sp-go').addEventListener('click', function() {
   var amt = parseFloat(g('sp-amt').value.replace(',','.'));
   var desc = g('sp-desc').value.trim() || 'Rechnung';
   if (!amt || isNaN(amt)) return;
-  var per = Math.round(amt / SP_N * 100) / 100;
-
-  g('sp-per').textContent = fmt(per);
-  g('sp-sub').textContent = desc + ' / ' + SP_N + ' Personen / gesamt ' + fmt(amt);
-
-  var list = g('split-list-card'); list.innerHTML = '';
-  list.style.padding = '8px 14px';
-  for (var i = 0; i < SP_N; i++) {
-    var row = el('div'); row.className = 'prow';
-    var ic = el('div'); ic.className = 'ei'; ic.textContent = '\uD83D\uDC64';
-    var inf = el('div'); inf.className = 'en';
-    var nm = el('div'); nm.className = 'enm'; nm.textContent = 'Person ' + (i+1);
-    var nt = el('div'); nt.className = 'ent'; nt.textContent = 'schuldet';
-    inf.appendChild(nm); inf.appendChild(nt);
-    var am = el('div'); am.className = 'ea'; am.textContent = fmt(per);
-    row.appendChild(ic); row.appendChild(inf); row.appendChild(am);
-    list.appendChild(row);
-  }
-
-  g('split-input-card').style.display = 'none';
-  g('split-result-card').style.display = 'block';
-  g('split-list-card').style.display = 'block';
-  g('sp-share').style.display = 'block';
-  g('sp-reset').style.display = 'block';
+  // Read names from inputs
+  g('sp-names-area').querySelectorAll('input').forEach(function(inp, i) {
+    if (!SP_PEOPLE[i]) SP_PEOPLE[i] = {name:'',amount:0,locked:false};
+    SP_PEOPLE[i].name = inp.value.trim();
+    SP_PEOPLE[i].locked = false;
+  });
+  buildSplitResult(amt, desc);
 });
 
 g('sp-share').addEventListener('click', function() {
   var amt = parseFloat(g('sp-amt').value) || 0;
   var desc = g('sp-desc').value || 'Rechnung';
-  var per = Math.round(amt / SP_N * 100) / 100;
-  var data = btoa(JSON.stringify({ a:amt, d:desc, n:SP_N, p:per }));
+  var people = SP_PEOPLE.map(function(p) { return {n: p.name, a: p.amount}; });
+  var data = btoa(JSON.stringify({ a:amt, d:desc, ppl:people }));
   var url = window.location.href.split('?')[0] + '?split=' + data;
   if (navigator.share) {
-    navigator.share({ title:'Koinonia Split', text: desc + ' - ' + fmt(per) + ' pro Person', url:url });
+    var names = SP_PEOPLE.map(function(p,i){ return (p.name||('P'+(i+1))) + ': ' + fmt(p.amount); }).join(', ');
+    navigator.share({ title:'Koinonia Split', text: desc + ' - ' + names, url:url });
   } else {
     try {
       var ta = el('textarea'); ta.value = url; ta.style.cssText = 'position:fixed;opacity:0';
@@ -758,16 +878,42 @@ g('sp-share').addEventListener('click', function() {
 
 g('sp-reset').addEventListener('click', function() {
   g('sp-amt').value = ''; g('sp-desc').value = '';
+  SP_N = 2; SP_PEOPLE = [{name:'',amount:0,locked:false},{name:'',amount:0,locked:false}];
   g('split-input-card').style.display = 'block';
   g('split-result-card').style.display = 'none';
-  g('split-list-card').style.display = 'none';
   g('sp-share').style.display = 'none';
   g('sp-reset').style.display = 'none';
-  SP_N = 2;
   g('sp-btns').querySelectorAll('button').forEach(function(b,i) {
     b.classList.remove('on'); if(i===0) b.classList.add('on');
   });
+  buildNamesArea();
 });
+
+function openSplitSuggest(label, amt) {
+  openModal('Aufteilen?');
+  var body = g('m-body');
+  var txt = el('div'); txt.style.cssText = 'text-align:center;margin-bottom:20px';
+  var ico = el('div'); ico.style.cssText = 'font-size:40px;margin-bottom:10px'; ico.textContent = '\uD83C\uDF7D';
+  var lbl = el('div'); lbl.style.cssText = 'font-size:16px;font-weight:700;margin-bottom:4px'; lbl.textContent = label;
+  var am = el('div'); am.style.cssText = 'font-size:28px;font-weight:800;color:#60A5FA'; am.textContent = fmt(amt);
+  var sub = el('div'); sub.style.cssText = 'font-size:12px;color:rgba(255,255,255,.4);margin-top:6px'; sub.textContent = 'Soll diese Ausgabe aufgeteilt werden?';
+  txt.appendChild(ico); txt.appendChild(lbl); txt.appendChild(am); txt.appendChild(sub);
+  body.appendChild(txt);
+  var r2 = el('div'); r2.className = 'r2';
+  var no = el('button'); no.className = 'btn-gray'; no.textContent = 'Nein';
+  no.addEventListener('click', closeModal);
+  var yes = el('button'); yes.className = 'btn-green'; yes.textContent = 'Ja, teilen';
+  yes.addEventListener('click', function() {
+    closeModal();
+    g('sp-amt').value = amt;
+    g('sp-desc').value = label;
+    SP_N = 2; SP_PEOPLE = [{name:'',amount:0,locked:false},{name:'',amount:0,locked:false}];
+    buildNamesArea();
+    showTab('split');
+  });
+  r2.appendChild(no); r2.appendChild(yes);
+  body.appendChild(r2);
+}
 
 // Check URL for split
 (function() {
@@ -778,13 +924,17 @@ g('sp-reset').addEventListener('click', function() {
       var data = JSON.parse(atob(raw));
       g('sp-amt').value = data.a;
       g('sp-desc').value = data.d;
-      SP_N = data.n;
-      g('sp-btns').querySelectorAll('button').forEach(function(b) {
-        b.classList.remove('on');
-        if (parseInt(b.getAttribute('data-n')) === data.n) b.classList.add('on');
-      });
+      if (data.ppl) {
+        SP_N = data.ppl.length;
+        SP_PEOPLE = data.ppl.map(function(p) { return {name:p.n, amount:p.a, locked:true}; });
+        g('sp-btns').querySelectorAll('button').forEach(function(b) {
+          b.classList.remove('on');
+          if (parseInt(b.getAttribute('data-n')) === SP_N) b.classList.add('on');
+        });
+        buildNamesArea();
+        buildSplitResult(data.a, data.d || 'Rechnung');
+      }
       showTab('split');
-      g('sp-go').click();
     } catch(e) {}
   }
 })();
@@ -879,6 +1029,18 @@ draw();
 
 </body>
 </html>
+
+
+
+
+
+  
+    
+  
+  
+    
+    
+
 
 
 
