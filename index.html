@@ -109,6 +109,11 @@ input,textarea,select{font-family:inherit;outline:none}
     <button id="btnWb" style="margin-top:12px;background:rgba(255,255,255,.07);border-radius:8px;padding:6px 12px;color:rgba(255,255,255,.35);font-size:11px">Budget ändern</button>
   </div>
 
+  <div id="insights-card" class="card" style="padding:14px 16px;margin-bottom:10px;display:none">
+    <div style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Einblicke</div>
+    <div id="insights-body"></div>
+  </div>
+
   <div class="sh" style="margin-top:4px">
     <div class="shl">Zuletzt</div>
     <button id="btnAllShort" style="background:none;color:#60A5FA;font-size:12px;font-weight:600">Alle →</button>
@@ -156,6 +161,9 @@ input,textarea,select{font-family:inherit;outline:none}
     <div id="all-c" style="font-size:12px;color:rgba(255,255,255,.35);margin-top:4px">0 Einträge</div>
   </div>
   <div id="all-l"></div>
+  <div style="margin-top:16px;text-align:center">
+    <button id="btnReset" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:8px 16px;color:rgba(239,68,68,.6);font-size:12px">Alle Daten zurücksetzen</button>
+  </div>
 </div>
 
 <!-- MODAL -->
@@ -186,6 +194,100 @@ function gi(k){
   return '💶';
 }
 
+
+// ── AUTO EMOJI ────────────────────────────────────────────────────────────────
+var EMOJI_RULES = [
+  // Transport
+  ['uber','car'],['bolt','scooter'],['taxi','car'],['bahn','car'],
+  ['mvv','car'],['bus','car'],['zug','car'],['flug','plane'],['ticket','ticket'],
+  ['parking','car'],['tankstelle','fuel'],['benzin','fuel'],['tanken','fuel'],
+  // Essen & Trinken
+  ['restaurant','food'],['essen','food'],['lunch','food'],['dinner','food'],
+  ['burger','food'],['pizza','food'],['sushi','food'],['kebab','food'],
+  ['mensa','food'],['kantine','food'],['bistro','food'],
+  ['cafe','coffee'],['coffee','coffee'],['kaffee','coffee'],
+  ['bäcker','coffee'],['backer','coffee'],['konditorei','cake'],
+  ['kuchen','cake'],['torte','cake'],['eis','cake'],
+  ['bar','beer'],['bier','beer'],['wein','beer'],['cocktail','beer'],
+  ['mcdonalds','food'],['burger king','food'],['subway','food'],
+  ['pizza hut','food'],['lieferando','food'],['deliveroo','food'],
+  ['burrito','wrap'],['döner','wrap'],['doner','wrap'],['wrap','wrap'],
+  // Einkaufen
+  ['supermarkt','cart'],['rewe','cart'],['edeka','cart'],['aldi','cart'],
+  ['lidl','cart'],['penny','cart'],['netto','cart'],['dm','cart'],
+  ['rossmann','cart'],['müller','cart'],['muller','cart'],
+  ['ikea','cart'],['saturn','phone'],['mediamarkt','phone'],
+  ['amazon','cart'],['zalando','shirt'],['zara','shirt'],
+  ['h&m','shirt'],['primark','shirt'],['uniqlo','shirt'],
+  // Pflege & Beauty
+  ['friseur','scissors'],['barbershop','barber'],['barber','barber'],
+  ['nägel','nail'],['nagel','nail'],['maniküre','nail'],['manikure','nail'],
+  ['pediküre','nail'],['massage','beauty'],['kosmetik','beauty'],
+  ['spa','beauty'],['sauna','beauty'],['wellness','beauty'],
+  // Sport & Freizeit
+  ['gym','gym'],['fitnessstudio','gym'],['fitness','gym'],
+  ['sport','sport'],['fußball','sport'],['fussball','sport'],
+  ['tennis','sport'],['schwimmen','sport'],['yoga','sport'],
+  ['kino','cinema'],['film','cinema'],['theater','fun'],
+  ['konzert','music'],['festival','music'],['museum','fun'],
+  ['bowling','fun'],['minigolf','fun'],
+  // Hotel & Reise
+  ['hotel','hotel'],['hostel','hotel'],['airbnb','hotel'],
+  ['booking','hotel'],['amsterdam','ticket'],['paris','ticket'],
+  ['london','ticket'],['münchen','ticket'],['berlin','ticket'],
+  ['urlaub','plane'],['reise','plane'],['flughafen','plane'],
+  // Gesundheit
+  ['apotheke','pill'],['arzt','pill'],['zahnarzt','pill'],
+  ['medikamente','pill'],['medikament','pill'],['krankenhaus','pill'],
+  ['optiker','pill'],
+  // Digital
+  ['netflix','phone'],['spotify','music'],['apple','phone'],
+  ['google','phone'],['microsoft','phone'],['adobe','phone'],
+  ['claude','phone'],['chatgpt','phone'],['openai','phone'],
+  ['power bi','phone'],['lexoffice','phone'],
+  // Sonstiges
+  ['kirche','gift'],['spende','gift'],['togo','gift'],
+  ['geburtst','gift'],['weihnacht','gift'],
+  ['friseur','scissors'],['haarschnitt','scissors'],
+  ['drogerie','beauty'],['parfum','beauty'],
+  ['buch','book'],['bücher','book'],['bucher','book'],
+  ['strom','fuel'],['gas','fuel'],['wasser','fuel'],
+  ['versicherung','pill'],['miete','market'],
+  ['bargeld','cash'],['atm','cash'],['abhebung','cash'],['gebuehren','cash'],['gebühren','cash'],
+  ['albert heijn','cart'],['albert','cart'],['heijn','cart'],
+  ['jumbo','cart'],['action','cart'],['hema','cart'],['ah ','cart'],
+  ['drinks','beer'],['drink','beer'],['cocktails','beer'],
+  ['museum','fun'],['ausstellung','fun'],['galerie','fun'],['art','fun'],
+  ['rijks','fun'],['van gogh','fun'],['anne frank','fun'],
+  ['canal','plane'],['tour','fun'],['rundfahrt','fun'],
+  ['jo ','fun'],['bar ','beer'],['pub','beer'],['club','beer'],['disco','fun'],
+  ['nightclub','fun'],['lounge','fun'],
+  ['snack','food'],['chips','food'],['sandwich','food'],['brötchen','coffee'],
+  ['breze','coffee'],['pretzel','coffee'],['croissant','coffee'],
+  ['waffeln','cake'],['waffle','cake'],['pancake','cake'],
+  ['souvenir','gift'],['geschenk','gift'],['mitbringsel','gift'],
+  ['drogerie','beauty'],['parfüm','beauty'],['parfum','beauty'],
+  ['kleidung','shirt'],['jacke','shirt'],['hose','shirt'],['schuhe','shoe'],
+  ['sneaker','shoe'],['adidas','shoe'],['nike','shoe'],
+  ['handy','phone'],['smartphone','phone'],['ladekabel','phone'],
+  ['kopfhörer','music'],['kopfhorer','music'],['headphones','music'],
+  ['fahrrad','car'],['bike','car'],['roller','scooter'],
+  ['tram','car'],['metro','car'],['u-bahn','car'],['s-bahn','car'],
+  ['parken','car'],['stellplatz','car'],
+  ['nachhilfe','book'],['schule','book'],['studium','book'],
+  ['handwerk','market'],['reparatur','market'],
+];
+
+function autoEmoji(label){
+  var lower = label.toLowerCase();
+  for(var i=0;i<EMOJI_RULES.length;i++){
+    if(lower.indexOf(EMOJI_RULES[i][0]) !== -1){
+      return EMOJI_RULES[i][1];
+    }
+  }
+  return null;
+}
+
 // ── STORAGE ───────────────────────────────────────────────────────────────────
 function lsGet(k,fb){
   try{var v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;}
@@ -201,24 +303,38 @@ function fmt(n){
 
 function makeSeed(){
   return [
-    {id:1,  label:'Ticket Amsterdam',  amount:43,   date:dAgo(2),  icon:'ticket',   note:'Amsterdam'},
-    {id:2,  label:'Burrito',           amount:25,   date:dAgo(2),  icon:'wrap',     note:'Amsterdam'},
-    {id:3,  label:'Coffee Shop',       amount:26,   date:dAgo(2),  icon:'coffee',   note:'Amsterdam'},
-    {id:4,  label:'Kuchen',            amount:5,    date:dAgo(2),  icon:'cake',     note:'Amsterdam'},
-    {id:5,  label:'Tax Tourismus',     amount:28.5, date:dAgo(2),  icon:'tax',      note:'Amsterdam'},
-    {id:6,  label:'Uber',              amount:23,   date:dAgo(2),  icon:'car',      note:'Amsterdam'},
-    {id:7,  label:'The Sirens',        amount:160,  date:dAgo(2),  icon:'food',     note:'Geburtstag Verlobte 💍'},
-    {id:8,  label:'Bolt',              amount:30,   date:dAgo(2),  icon:'scooter',  note:'Amsterdam'},
-    {id:9,  label:'Supermarkt',        amount:85,   date:dAgo(6),  icon:'cart',     note:''},
-    {id:10, label:'Friseur',           amount:35,   date:dAgo(11), icon:'scissors', note:''},
-    {id:11, label:'Coffee',            amount:8,    date:dAgo(9),  icon:'coffee',   note:''},
-    {id:12, label:'Kino',              amount:22,   date:dAgo(14), icon:'cinema',   note:''},
-    {id:13, label:'Sport',             amount:40,   date:dAgo(8),  icon:'gym',      note:''},
-    {id:14, label:'Supermarkt',        amount:62,   date:dAgo(13), icon:'cart',     note:''},
-    {id:15, label:'Nägel',             amount:45,   date:dAgo(18), icon:'nail',     note:''}
+    {id:101, label:'Einkauf Albert Heijn', amount:3.9,  date:dAgo(1), icon:'cart',    note:'Amsterdam'},
+    {id:102, label:'Jo',                   amount:13,   date:dAgo(1), icon:'fun',     note:'Amsterdam'},
+    {id:103, label:'Bargeld Gebuehren',    amount:4,    date:dAgo(1), icon:'cash',    note:'Amsterdam'},
+    {id:104, label:'Ticket',               amount:4.9,  date:dAgo(1), icon:'ticket',  note:'Amsterdam'},
+    {id:105, label:'Drinks Museum',        amount:25,   date:dAgo(1), icon:'beer',    note:'Amsterdam'},
+    {id:106, label:'Bargeld',              amount:20,   date:dAgo(1), icon:'cash',    note:'Amsterdam'},
+    {id:107, label:'Essen gehen',          amount:110,  date:dAgo(1), icon:'food',    note:'Amsterdam · Abendessen'},
+    {id:1,   label:'Ticket Amsterdam',     amount:43,   date:dAgo(3), icon:'ticket',  note:'Amsterdam'},
+    {id:2,   label:'Burrito',              amount:25,   date:dAgo(3), icon:'wrap',    note:'Amsterdam'},
+    {id:3,   label:'Coffee Shop',          amount:26,   date:dAgo(3), icon:'coffee',  note:'Amsterdam'},
+    {id:4,   label:'Kuchen',               amount:5,    date:dAgo(3), icon:'cake',    note:'Amsterdam'},
+    {id:5,   label:'Tax Tourismus',        amount:28.5, date:dAgo(3), icon:'tax',     note:'Amsterdam'},
+    {id:6,   label:'Uber',                 amount:23,   date:dAgo(3), icon:'car',     note:'Amsterdam'},
+    {id:7,   label:'The Sirens',           amount:160,  date:dAgo(3), icon:'food',    note:'Geburtstag Verlobte'},
+    {id:8,   label:'Bolt',                 amount:30,   date:dAgo(3), icon:'scooter', note:'Amsterdam'},
+    {id:9,   label:'Supermarkt',           amount:85,   date:dAgo(7), icon:'cart',    note:''},
+    {id:10,  label:'Friseur',              amount:35,   date:dAgo(12),icon:'scissors',note:''},
+    {id:11,  label:'Coffee',               amount:8,    date:dAgo(10),icon:'coffee',  note:''},
+    {id:12,  label:'Kino',                 amount:22,   date:dAgo(15),icon:'cinema',  note:''},
+    {id:13,  label:'Sport',                amount:40,   date:dAgo(9), icon:'gym',     note:''},
+    {id:14,  label:'Supermarkt',           amount:62,   date:dAgo(14),icon:'cart',    note:''},
+    {id:15,  label:'Naegel',               amount:45,   date:dAgo(19),icon:'nail',    note:''}
   ];
 }
 
+// Reset via URL param
+if(window.location.search.indexOf('reset=1') !== -1){
+  localStorage.removeItem('kn10-exp');
+  localStorage.removeItem('kn10-wb');
+  localStorage.removeItem('kn10-mb');
+  window.history.replaceState(null,'',window.location.pathname);
+}
 var EXP = lsGet('kn10-exp', null);
 if(!EXP || EXP.length === 0){ EXP = makeSeed(); lsSet('kn10-exp', EXP); }
 var WB = lsGet('kn10-wb', 400);
@@ -298,6 +414,150 @@ function draw(){
   g('h-ws2').textContent=fmt(st.ws);g('h-ws2').style.color=sc;
   g('h-ms').textContent=fmt(st.ms);
 
+  // ── SMART INSIGHTS ──
+  var st2 = calc();
+  var wc = weekComparison();
+  var df = dayForecast();
+  var insBody = g('insights-body');
+  insBody.innerHTML = '';
+  var insights = [];
+
+  // 1. Biggest spending label
+  var labelTotals = {};
+  EXP.forEach(function(e){
+    var k = e.label;
+    if(!labelTotals[k]) labelTotals[k] = {label:e.label,icon:e.icon,total:0};
+    labelTotals[k].total += e.amount;
+  });
+  var sorted = Object.values(labelTotals).sort(function(a,b){return b.total-a.total;});
+  if(sorted.length > 0){
+    insights.push({
+      emoji:'🔥',
+      text:'Größter Posten: '+sorted[0].icon+' '+sorted[0].label,
+      val:fmt(sorted[0].total),
+      col:'#EF4444'
+    });
+  }
+
+  // 2. Most expensive day of week
+  var byDay = {};
+  var dayNames = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+  EXP.forEach(function(e){
+    var wd = new Date(e.date).getDay();
+    if(!byDay[wd]) byDay[wd] = 0;
+    byDay[wd] += e.amount;
+  });
+  var maxDay = -1, maxDayAmt = 0;
+  Object.keys(byDay).forEach(function(d){if(byDay[d]>maxDayAmt){maxDayAmt=byDay[d];maxDay=+d;}});
+  if(maxDay >= 0){
+    insights.push({
+      emoji:'📅',
+      text:'Teuerster Wochentag: '+dayNames[maxDay],
+      val:fmt(maxDayAmt),
+      col:'#F59E0B'
+    });
+  }
+
+  // 3. Week comparison
+  if(wc.lastWeek > 0){
+    var wdiff = wc.diff;
+    insights.push({
+      emoji: wdiff > 0 ? '⬆️' : '⬇️',
+      text: wdiff > 0 ? 'Mehr als letzte Woche' : 'Weniger als letzte Woche',
+      val: fmt(Math.abs(wdiff)),
+      col: wdiff > 0 ? '#EF4444' : '#10B981'
+    });
+  }
+
+  // 4. How many days budget lasts
+  if(st2.ws > 0 && WB > 0){
+    var dailyRate = st2.ws / 7;
+    var daysLeft = Math.max(0, Math.floor((WB - st2.ws) / dailyRate));
+    if(daysLeft > 0 && daysLeft < 14){
+      insights.push({
+        emoji:'⏳',
+        text:'Budget reicht noch ca.',
+        val:daysLeft+' Tage',
+        col:'#60A5FA'
+      });
+    }
+  }
+
+  // 5. Recurring pattern
+  var rec2 = findRecurring();
+  if(rec2.length > 0 && rec2[0].times >= 3){
+    insights.push({
+      emoji:'🔄',
+      text:rec2[0].label+' ('+rec2[0].times+'x wiederholt)',
+      val:'Ø '+fmt(rec2[0].avg),
+      col:'rgba(255,255,255,.5)'
+    });
+  }
+
+  insights.forEach(function(ins){
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)';
+    var left = document.createElement('div');
+    left.style.cssText = 'font-size:13px;color:rgba(255,255,255,.65)';
+    left.textContent = ins.emoji+' '+ins.text;
+    var right = document.createElement('div');
+    right.style.cssText = 'font-size:13px;font-weight:700;color:'+ins.col;
+    right.textContent = ins.val;
+    row.appendChild(left);row.appendChild(right);
+    insBody.appendChild(row);
+  });
+
+  g('insights-card').style.display = insights.length > 0 ? 'block' : 'none';
+
+  var rec=g('h-rec');rec.innerHTML='';
+  var df = dayForecast();
+  var rec2 = findRecurring();
+  var insBody = g('insights-body');
+  insBody.innerHTML = '';
+  var hasInsight = false;
+
+  // Week comparison
+  if(wc.lastWeek > 0){
+    hasInsight = true;
+    var wi = document.createElement('div');
+    wi.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px';
+    var wdiff = wc.diff;
+    var wicon = wdiff > 0 ? '⬆' : '⬇';
+    var wcol = wdiff > 0 ? '#EF4444' : '#10B981';
+    wi.innerHTML = '<div style="font-size:13px;color:rgba(255,255,255,.7)">Diese vs. letzte Woche</div>'
+      +'<div style="font-size:13px;font-weight:700;color:'+wcol+'">'+wicon+' '+fmt(Math.abs(wdiff))+'</div>';
+    insBody.appendChild(wi);
+  }
+
+  // Day forecast
+  if(df !== null){
+    hasInsight = true;
+    var di = document.createElement('div');
+    di.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px';
+    var days = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+    di.innerHTML = '<div style="font-size:13px;color:rgba(255,255,255,.7)">Typ. Ausgabe '+days[new Date().getDay()]+'</div>'
+      +'<div style="font-size:13px;font-weight:700;color:#60A5FA">'+fmt(df)+'</div>';
+    insBody.appendChild(di);
+  }
+
+  // Recurring
+  if(rec2.length > 0){
+    hasInsight = true;
+    var ri = document.createElement('div');
+    ri.style.cssText = 'margin-top:4px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)';
+    ri.innerHTML = '<div style="font-size:10px;color:rgba(255,255,255,.3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Oft wiederholt</div>';
+    rec2.forEach(function(r){
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:4px';
+      row.innerHTML = '<div style="font-size:13px;color:rgba(255,255,255,.6)">'+r.icon+' '+r.label+' ('+r.times+'x)</div>'
+        +'<div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.5)">Ø '+fmt(r.avg)+'</div>';
+      ri.appendChild(row);
+    });
+    insBody.appendChild(ri);
+  }
+
+  g('insights-card').style.display = hasInsight ? 'block' : 'none';
+
   var rec=g('h-rec');rec.innerHTML='';
   if(EXP.length===0){
     var em=document.createElement('div');
@@ -354,6 +614,54 @@ function draw(){
   });
 }
 
+// ── PREDICTIVE FEATURES (ohne KI) ────────────────────────────────────────────
+
+// Erkennt wiederkehrende Ausgaben (gleicher Label, ähnlicher Betrag, mehrmals)
+function findRecurring(){
+  var counts = {};
+  EXP.forEach(function(e){
+    var key = e.label.toLowerCase().trim();
+    if(!counts[key]) counts[key] = {label:e.label, icon:e.icon, times:0, avg:0, total:0};
+    counts[key].times++;
+    counts[key].total += e.amount;
+  });
+  var recurring = [];
+  Object.keys(counts).forEach(function(k){
+    if(counts[k].times >= 2){
+      counts[k].avg = Math.round(counts[k].total / counts[k].times * 100) / 100;
+      recurring.push(counts[k]);
+    }
+  });
+  return recurring.sort(function(a,b){return b.times-a.times;}).slice(0,3);
+}
+
+// Berechnet Sparquote diese Woche vs letzte Woche
+function weekComparison(){
+  var now = new Date(), day = now.getDay()||7;
+  var thisMon = new Date(now); thisMon.setDate(now.getDate()-day+1); thisMon.setHours(0,0,0,0);
+  var lastMon = new Date(thisMon); lastMon.setDate(thisMon.getDate()-7);
+  var lastSun = new Date(thisMon); lastSun.setSeconds(-1);
+  var thisWeek = EXP.filter(function(e){return new Date(e.date)>=thisMon;}).reduce(function(s,e){return s+e.amount;},0);
+  var lastWeek = EXP.filter(function(e){var d=new Date(e.date);return d>=lastMon&&d<=lastSun;}).reduce(function(s,e){return s+e.amount;},0);
+  return {thisWeek:thisWeek, lastWeek:lastWeek, diff:thisWeek-lastWeek};
+}
+
+// Tagesprognose: Basierend auf Wochentag-Durchschnitt
+function dayForecast(){
+  var now = new Date(), todayDay = now.getDay();
+  var byDay = {};
+  EXP.forEach(function(e){
+    var d = new Date(e.date), wd = d.getDay();
+    if(!byDay[wd]) byDay[wd] = {total:0,count:0};
+    byDay[wd].total += e.amount;
+    byDay[wd].count++;
+  });
+  if(byDay[todayDay] && byDay[todayDay].count > 0){
+    return Math.round(byDay[todayDay].total / byDay[todayDay].count * 100) / 100;
+  }
+  return null;
+}
+
 // ── TABS ──────────────────────────────────────────────────────────────────────
 function showTab(id){
   ['home','forecast','all'].forEach(function(p){g(p).classList.remove('on');g('t-'+p).classList.remove('on');});
@@ -384,6 +692,7 @@ function openAdd(){
   ICO.forEach(function(ic){
     var b=document.createElement('button');
     b.className='ib'+(ic[0]==='cart'?' on':'');
+    b.setAttribute('data-key',ic[0]);
     b.textContent=ic[1];
     (function(key,btn){
       btn.addEventListener('click',function(){
@@ -409,6 +718,18 @@ function openAdd(){
     if(f.ph)inp.placeholder=f.ph;
     if(f.val)inp.value=f.val;
     if(f.inputmode)inp.setAttribute('inputmode',f.inputmode);
+    // Auto emoji on label input
+    if(f.id==='fl'){
+      inp.addEventListener('input',function(){
+        var auto=autoEmoji(inp.value);
+        if(auto){
+          SEL_ICON=auto;
+          document.querySelectorAll('.ib').forEach(function(x){x.classList.remove('on');});
+          var found=document.querySelector('.ib[data-key="'+auto+'"]');
+          if(found)found.classList.add('on');
+        }
+      });
+    }
     body.appendChild(inp);
   });
 
@@ -522,6 +843,18 @@ g('btnAdd').addEventListener('click',openAdd);
 g('btnAllShort').addEventListener('click',function(){showTab('all');});
 g('btnWb').addEventListener('click',openBudget);
 g('btnMb').addEventListener('click',openBudgetMonth);
+g('btnReset').addEventListener('click',function(){
+  if(confirm('Alle Daten löschen und neu starten?')){
+    localStorage.removeItem('kn10-exp');
+    localStorage.removeItem('kn10-wb');
+    localStorage.removeItem('kn10-mb');
+    EXP = makeSeed();
+    WB = 400;
+    MB = 1500;
+    lsSet('kn10-exp',EXP);
+    draw();
+  }
+});
 g('m-x').addEventListener('click',closeModal);
 g('ov').addEventListener('click',function(ev){if(ev.target===this)closeModal();});
 
@@ -531,5 +864,5 @@ draw();
 
 </body>
 </html>
-
+ 
 
