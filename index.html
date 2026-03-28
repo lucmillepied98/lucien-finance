@@ -110,7 +110,7 @@ input,textarea,select{font-family:inherit;outline:none}
   </div>
 
   <div id="insights-card" class="card" style="padding:14px 16px;margin-bottom:10px;display:none">
-    <div style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Einblicke</div>
+    <div style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">💡 Einblicke</div>
     <div id="insights-body"></div>
   </div>
 
@@ -301,32 +301,7 @@ function fmt(n){
   return '€\u202f'+(+(n)).toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:2});
 }
 
-function makeSeed(){
-  return [
-    {id:101, label:'Einkauf Albert Heijn', amount:3.9,  date:dAgo(1), icon:'cart',    note:'Amsterdam'},
-    {id:102, label:'Jo',                   amount:13,   date:dAgo(1), icon:'fun',     note:'Amsterdam'},
-    {id:103, label:'Bargeld Gebuehren',    amount:4,    date:dAgo(1), icon:'cash',    note:'Amsterdam'},
-    {id:104, label:'Ticket',               amount:4.9,  date:dAgo(1), icon:'ticket',  note:'Amsterdam'},
-    {id:105, label:'Drinks Museum',        amount:25,   date:dAgo(1), icon:'beer',    note:'Amsterdam'},
-    {id:106, label:'Bargeld',              amount:20,   date:dAgo(1), icon:'cash',    note:'Amsterdam'},
-    {id:107, label:'Essen gehen',          amount:110,  date:dAgo(1), icon:'food',    note:'Amsterdam · Abendessen'},
-    {id:1,   label:'Ticket Amsterdam',     amount:43,   date:dAgo(3), icon:'ticket',  note:'Amsterdam'},
-    {id:2,   label:'Burrito',              amount:25,   date:dAgo(3), icon:'wrap',    note:'Amsterdam'},
-    {id:3,   label:'Coffee Shop',          amount:26,   date:dAgo(3), icon:'coffee',  note:'Amsterdam'},
-    {id:4,   label:'Kuchen',               amount:5,    date:dAgo(3), icon:'cake',    note:'Amsterdam'},
-    {id:5,   label:'Tax Tourismus',        amount:28.5, date:dAgo(3), icon:'tax',     note:'Amsterdam'},
-    {id:6,   label:'Uber',                 amount:23,   date:dAgo(3), icon:'car',     note:'Amsterdam'},
-    {id:7,   label:'The Sirens',           amount:160,  date:dAgo(3), icon:'food',    note:'Geburtstag Verlobte'},
-    {id:8,   label:'Bolt',                 amount:30,   date:dAgo(3), icon:'scooter', note:'Amsterdam'},
-    {id:9,   label:'Supermarkt',           amount:85,   date:dAgo(7), icon:'cart',    note:''},
-    {id:10,  label:'Friseur',              amount:35,   date:dAgo(12),icon:'scissors',note:''},
-    {id:11,  label:'Coffee',               amount:8,    date:dAgo(10),icon:'coffee',  note:''},
-    {id:12,  label:'Kino',                 amount:22,   date:dAgo(15),icon:'cinema',  note:''},
-    {id:13,  label:'Sport',                amount:40,   date:dAgo(9), icon:'gym',     note:''},
-    {id:14,  label:'Supermarkt',           amount:62,   date:dAgo(14),icon:'cart',    note:''},
-    {id:15,  label:'Naegel',               amount:45,   date:dAgo(19),icon:'nail',    note:''}
-  ];
-}
+function makeSeed(){ return []; }
 
 // Reset via URL param
 if(window.location.search.indexOf('reset=1') !== -1){
@@ -401,7 +376,7 @@ function makeRow(e){
 // ── DRAW ──────────────────────────────────────────────────────────────────────
 function draw(){
   var st=calc(),sc=scCol(st.wp);
-  g('sub').textContent=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
+  g('sub').textContent=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
   // Home
   g('h-ws').textContent=fmt(st.ws);g('h-ws').style.color=sc;
@@ -433,9 +408,18 @@ function draw(){
   if(sorted.length > 0){
     insights.push({
       emoji:'🔥',
-      text:'Größter Posten: '+sorted[0].icon+' '+sorted[0].label,
+      text:'Groesster Posten: '+sorted[0].icon+' '+sorted[0].label,
       val:fmt(sorted[0].total),
       col:'#EF4444'
+    });
+  }
+  // 1b. Top 2 and 3 if enough data
+  if(sorted.length > 1){
+    insights.push({
+      emoji:'2️⃣',
+      text:sorted[1].icon+' '+sorted[1].label,
+      val:fmt(sorted[1].total),
+      col:'#F59E0B'
     });
   }
 
@@ -473,19 +457,28 @@ function draw(){
   if(st2.ws > 0 && WB > 0){
     var dailyRate = st2.ws / 7;
     var daysLeft = Math.max(0, Math.floor((WB - st2.ws) / dailyRate));
-    if(daysLeft > 0 && daysLeft < 14){
+    if(daysLeft >= 0 && daysLeft < 30){
       insights.push({
         emoji:'⏳',
-        text:'Budget reicht noch ca.',
-        val:daysLeft+' Tage',
-        col:'#60A5FA'
+        text: daysLeft === 0 ? 'Wochenbudget aufgebraucht' : 'Budget reicht noch ca.',
+        val: daysLeft === 0 ? '' : daysLeft+' Tage',
+        col: daysLeft < 3 ? '#EF4444' : '#60A5FA'
       });
     }
+  }
+  // 4b. Total spent so far this month
+  if(st2.ms > 0){
+    insights.push({
+      emoji:'📊',
+      text:'Gesamt diesen Monat',
+      val:fmt(st2.ms),
+      col:'#60A5FA'
+    });
   }
 
   // 5. Recurring pattern
   var rec2 = findRecurring();
-  if(rec2.length > 0 && rec2[0].times >= 3){
+  if(rec2.length > 0 && rec2[0].times >= 2){
     insights.push({
       emoji:'🔄',
       text:rec2[0].label+' ('+rec2[0].times+'x wiederholt)',
@@ -507,56 +500,7 @@ function draw(){
     insBody.appendChild(row);
   });
 
-  g('insights-card').style.display = insights.length > 0 ? 'block' : 'none';
-
-  var rec=g('h-rec');rec.innerHTML='';
-  var df = dayForecast();
-  var rec2 = findRecurring();
-  var insBody = g('insights-body');
-  insBody.innerHTML = '';
-  var hasInsight = false;
-
-  // Week comparison
-  if(wc.lastWeek > 0){
-    hasInsight = true;
-    var wi = document.createElement('div');
-    wi.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px';
-    var wdiff = wc.diff;
-    var wicon = wdiff > 0 ? '⬆' : '⬇';
-    var wcol = wdiff > 0 ? '#EF4444' : '#10B981';
-    wi.innerHTML = '<div style="font-size:13px;color:rgba(255,255,255,.7)">Diese vs. letzte Woche</div>'
-      +'<div style="font-size:13px;font-weight:700;color:'+wcol+'">'+wicon+' '+fmt(Math.abs(wdiff))+'</div>';
-    insBody.appendChild(wi);
-  }
-
-  // Day forecast
-  if(df !== null){
-    hasInsight = true;
-    var di = document.createElement('div');
-    di.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px';
-    var days = ['So','Mo','Di','Mi','Do','Fr','Sa'];
-    di.innerHTML = '<div style="font-size:13px;color:rgba(255,255,255,.7)">Typ. Ausgabe '+days[new Date().getDay()]+'</div>'
-      +'<div style="font-size:13px;font-weight:700;color:#60A5FA">'+fmt(df)+'</div>';
-    insBody.appendChild(di);
-  }
-
-  // Recurring
-  if(rec2.length > 0){
-    hasInsight = true;
-    var ri = document.createElement('div');
-    ri.style.cssText = 'margin-top:4px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)';
-    ri.innerHTML = '<div style="font-size:10px;color:rgba(255,255,255,.3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Oft wiederholt</div>';
-    rec2.forEach(function(r){
-      var row = document.createElement('div');
-      row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:4px';
-      row.innerHTML = '<div style="font-size:13px;color:rgba(255,255,255,.6)">'+r.icon+' '+r.label+' ('+r.times+'x)</div>'
-        +'<div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.5)">Ø '+fmt(r.avg)+'</div>';
-      ri.appendChild(row);
-    });
-    insBody.appendChild(ri);
-  }
-
-  g('insights-card').style.display = hasInsight ? 'block' : 'none';
+  g('insights-card').style.display = EXP.length >= 1 ? 'block' : 'none';
 
   var rec=g('h-rec');rec.innerHTML='';
   if(EXP.length===0){
@@ -748,7 +692,7 @@ function openAdd(){
     closeModal();draw();
     g('sub').textContent='✓ Gespeichert';
     setTimeout(function(){
-      g('sub').textContent=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
+      g('sub').textContent=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     },1500);
   });
   r2.appendChild(ca);r2.appendChild(sv);
@@ -830,7 +774,7 @@ function shareApp(){
     document.execCommand('copy');document.body.removeChild(ta);
     g('sub').textContent='Link kopiert!';
     setTimeout(function(){
-      g('sub').textContent=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
+      g('sub').textContent=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     },2000);
   }
 }
@@ -864,5 +808,13 @@ draw();
 
 </body>
 </html>
- 
+
+
+  
+  
+
+  
+
+
+
 
