@@ -87,6 +87,8 @@ input,textarea,select{font-family:inherit;outline:none}
   <button class="tab on" id="t-home">Home</button>
   <button class="tab" id="t-forecast">Forecast</button>
   <button class="tab" id="t-all">Alle</button>
+  <button class="tab" id="t-split">Split</button>
+  <button class="tab" id="t-trips">Trips</button>
 </div>
 
 <!-- HOME -->
@@ -360,7 +362,7 @@ function makeRow(e){
   nt.textContent=e.note||new Date(e.date).toLocaleDateString('de-DE',{day:'numeric',month:'short'});
   inf.appendChild(nm);inf.appendChild(nt);
   var am=document.createElement('div');am.className='ea';am.textContent=fmt(e.amount);
-  var dl=document.createElement('button');dl.className='ed';dl.textContent='×';
+  var dl=document.createElement('button');dl.className='ed';dl.textContent='x';
   (function(eid){
     dl.addEventListener('click',function(ev){
       ev.stopPropagation();
@@ -384,7 +386,7 @@ function draw(){
   g('h-bar').style.width=st.wp+'%';g('h-bar').style.background=sc;
   g('h-st').textContent=st.wp<60?'Im Budget':st.wp<85?'Aufpassen':'Fast erreicht';
   g('h-st').style.color=sc;
-  g('h-lf').textContent=(WB-st.ws)>=0?fmt(WB-st.ws)+' übrig':fmt(Math.abs(WB-st.ws))+' überzogen';
+  g('h-lf').textContent=(WB-st.ws)>=0?fmt(WB-st.ws)+' uebrig':fmt(Math.abs(WB-st.ws))+' ueberzogen';
   g('h-ts').textContent=fmt(st.ts);
   g('h-ws2').textContent=fmt(st.ws);g('h-ws2').style.color=sc;
   g('h-ms').textContent=fmt(st.ms);
@@ -407,8 +409,8 @@ function draw(){
   var sorted = Object.values(labelTotals).sort(function(a,b){return b.total-a.total;});
   if(sorted.length > 0){
     insights.push({
-      emoji:'🔥',
-      text:'Groesster Posten: '+sorted[0].icon+' '+sorted[0].label,
+      emoji:'[1]',
+      text:'Top Ausgabe: '+sorted[0].label,
       val:fmt(sorted[0].total),
       col:'#EF4444'
     });
@@ -416,7 +418,7 @@ function draw(){
   // 1b. Top 2 and 3 if enough data
   if(sorted.length > 1){
     insights.push({
-      emoji:'2️⃣',
+      emoji:'[2]',
       text:sorted[1].icon+' '+sorted[1].label,
       val:fmt(sorted[1].total),
       col:'#F59E0B'
@@ -435,8 +437,8 @@ function draw(){
   Object.keys(byDay).forEach(function(d){if(byDay[d]>maxDayAmt){maxDayAmt=byDay[d];maxDay=+d;}});
   if(maxDay >= 0){
     insights.push({
-      emoji:'📅',
-      text:'Teuerster Wochentag: '+dayNames[maxDay],
+      emoji:'[Kal]',
+      text:'Meist ausgegeben: '+dayNames[maxDay],
       val:fmt(maxDayAmt),
       col:'#F59E0B'
     });
@@ -446,7 +448,7 @@ function draw(){
   if(wc.lastWeek > 0){
     var wdiff = wc.diff;
     insights.push({
-      emoji: wdiff > 0 ? '⬆️' : '⬇️',
+      emoji: wdiff > 0 ? '[+]' : '[-]',
       text: wdiff > 0 ? 'Mehr als letzte Woche' : 'Weniger als letzte Woche',
       val: fmt(Math.abs(wdiff)),
       col: wdiff > 0 ? '#EF4444' : '#10B981'
@@ -459,8 +461,8 @@ function draw(){
     var daysLeft = Math.max(0, Math.floor((WB - st2.ws) / dailyRate));
     if(daysLeft >= 0 && daysLeft < 30){
       insights.push({
-        emoji:'⏳',
-        text: daysLeft === 0 ? 'Wochenbudget aufgebraucht' : 'Budget reicht noch ca.',
+        emoji:'[Zeit]',
+        text: daysLeft === 0 ? 'Budget aufgebraucht' : 'Budget reicht noch',
         val: daysLeft === 0 ? '' : daysLeft+' Tage',
         col: daysLeft < 3 ? '#EF4444' : '#60A5FA'
       });
@@ -469,7 +471,7 @@ function draw(){
   // 4b. Total spent so far this month
   if(st2.ms > 0){
     insights.push({
-      emoji:'📊',
+      emoji:'[Mo]',
       text:'Gesamt diesen Monat',
       val:fmt(st2.ms),
       col:'#60A5FA'
@@ -480,9 +482,9 @@ function draw(){
   var rec2 = findRecurring();
   if(rec2.length > 0 && rec2[0].times >= 2){
     insights.push({
-      emoji:'🔄',
+      emoji:'[~]',
       text:rec2[0].label+' ('+rec2[0].times+'x wiederholt)',
-      val:'Ø '+fmt(rec2[0].avg),
+      val:'O '+fmt(rec2[0].avg),
       col:'rgba(255,255,255,.5)'
     });
   }
@@ -506,7 +508,7 @@ function draw(){
   if(EXP.length===0){
     var em=document.createElement('div');
     em.style.cssText='text-align:center;padding:18px 0;color:rgba(255,255,255,.3);font-size:13px';
-    em.textContent='Noch keine Ausgaben · tippe +';
+    em.textContent='Noch keine Ausgaben';
     rec.appendChild(em);
   } else {
     EXP.slice(0,6).forEach(function(e){rec.appendChild(makeRow(e));});
@@ -515,14 +517,14 @@ function draw(){
   // All
   var tot=EXP.reduce(function(s,e){return s+e.amount;},0);
   g('all-t').textContent=fmt(tot);
-  g('all-c').textContent=EXP.length+' Einträge';
+  g('all-c').textContent=EXP.length+' Eintraege';
   // Forecast
   var fc=calcFc();
   var fcCol=fc.diff>20?'#EF4444':fc.diff>-50?'#F59E0B':'#10B981';
   g('fc-big').textContent=fmt(fc.fore);g('fc-big').style.color=fcCol;
   g('fc-bud').textContent='Budget: '+fmt(MB);
   var bdg=g('fc-badge');
-  bdg.textContent=fc.diff>20?'+'+fmt(fc.diff)+' Ueberschreitung':fc.diff>-50?'Knapp im Budget':'Gut · '+fmt(Math.abs(fc.diff))+' Spielraum';
+  bdg.textContent=fc.diff>20?'+'+fmt(fc.diff)+'  ueberschritten':fc.diff>-50?'Knapp im Budget':'Gut +'+fmt(Math.abs(fc.diff))+' Spielraum';
   bdg.style.color=fcCol;
   bdg.style.background=fc.diff>20?'rgba(239,68,68,.12)':fc.diff>-50?'rgba(245,158,11,.12)':'rgba(16,185,129,.12)';
   g('fc-days').textContent='Tag '+fc.dom+' / '+fc.dim;
@@ -608,7 +610,7 @@ function dayForecast(){
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
 function showTab(id){
-  ['home','forecast','all'].forEach(function(p){g(p).classList.remove('on');g('t-'+p).classList.remove('on');});
+  ['home','forecast','all','split','trips'].forEach(function(p){g(p).classList.remove('on');g('t-'+p).classList.remove('on');});
   g(id).classList.add('on');g('t-'+id).classList.add('on');
 }
 
@@ -628,7 +630,7 @@ function closeModal(){
 // ── ADD ───────────────────────────────────────────────────────────────────────
 function openAdd(){
   SEL_ICON='cart';
-  openModal('Ausgabe hinzufügen');
+  openModal('Ausgabe hinzufuegen');
   var body=g('m-b');
 
   // Icon grid
@@ -652,7 +654,7 @@ function openAdd(){
   // Fields
   var fields=[
     {id:'fl',type:'text',ph:'Bezeichnung'},
-    {id:'fa',type:'number',ph:'Betrag (€)',inputmode:'decimal'},
+    {id:'fa',type:'number',ph:'Betrag (Euro)',inputmode:'decimal'},
     {id:'fd',type:'date',val:todayStr()},
     {id:'fn',type:'text',ph:'Notiz (optional)'}
   ];
@@ -690,7 +692,7 @@ function openAdd(){
     EXP.unshift({id:Date.now(),label:lbl,amount:amt,date:date,icon:SEL_ICON,note:note});
     lsSet('kn10-exp',EXP);
     closeModal();draw();
-    g('sub').textContent='✓ Gespeichert';
+    g('sub').textContent='Gespeichert';
     setTimeout(function(){
       g('sub').textContent=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     },1500);
@@ -740,7 +742,7 @@ function openBudget(){
 
   var pr=document.createElement('div');pr.className='prow';
   [200,300,400,500].forEach(function(pv){
-    var b=document.createElement('button');b.className='pb'+(WB===pv?' on':'');b.textContent='€'+pv;
+    var b=document.createElement('button');b.className='pb'+(WB===pv?' on':'');b.textContent='E'+pv;
     (function(val,btn){
       btn.addEventListener('click',function(){
         inp.value=val;
@@ -783,31 +785,293 @@ function shareApp(){
 g('t-home').addEventListener('click',function(){showTab('home');});
 g('t-forecast').addEventListener('click',function(){showTab('forecast');});
 g('t-all').addEventListener('click',function(){showTab('all');});
+g('t-split').addEventListener('click',function(){showTab('split');});
+g('t-trips').addEventListener('click',function(){showTab('trips');drawTrips();});
 g('btnAdd').addEventListener('click',openAdd);
 g('btnAllShort').addEventListener('click',function(){showTab('all');});
 g('btnWb').addEventListener('click',openBudget);
 g('btnMb').addEventListener('click',openBudgetMonth);
 g('btnReset').addEventListener('click',function(){
-  if(confirm('Alle Daten löschen und neu starten?')){
+  openModal('Daten zuruecksetzen');
+  var body=g('m-b');
+  var txt=document.createElement('div');
+  txt.style.cssText='color:rgba(255,255,255,.5);font-size:14px;margin-bottom:20px;text-align:center';
+  txt.textContent='Alle Ausgaben werden geloescht.';
+  body.appendChild(txt);
+  var r2=document.createElement('div');r2.className='r2';
+  var ca=document.createElement('button');ca.className='bg2';ca.textContent='Abbrechen';
+  ca.addEventListener('click',closeModal);
+  var ok=document.createElement('button');
+  ok.style.cssText='flex:1;padding:13px;border-radius:12px;background:#EF4444;color:#fff;font-size:14px;font-weight:700';
+  ok.textContent='Loeschen';
+  ok.addEventListener('click',function(){
     localStorage.removeItem('kn10-exp');
     localStorage.removeItem('kn10-wb');
     localStorage.removeItem('kn10-mb');
-    EXP = makeSeed();
-    WB = 400;
-    MB = 1500;
+    EXP=makeSeed();WB=400;MB=1500;
     lsSet('kn10-exp',EXP);
-    draw();
-  }
+    closeModal();draw();
+  });
+  r2.appendChild(ca);r2.appendChild(ok);body.appendChild(r2);
 });
 g('m-x').addEventListener('click',closeModal);
 g('ov').addEventListener('click',function(ev){if(ev.target===this)closeModal();});
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
+
+// ── SPLIT ─────────────────────────────────────────────────────────────────────
+var SP_N = 2;
+var SP_NAMES = ['Person 1','Person 2','Person 3','Person 4','Person 5','Person 6'];
+
+document.querySelectorAll('#sp-ppl-row .pb').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    SP_N = parseInt(btn.getAttribute('data-n'));
+    document.querySelectorAll('#sp-ppl-row .pb').forEach(function(b){b.classList.remove('on');});
+    btn.classList.add('on');
+  });
+});
+
+g('sp-calc').addEventListener('click',function(){
+  var amt = parseFloat(g('sp-amt').value.replace(',','.'));
+  var desc = g('sp-desc').value.trim() || 'Rechnung';
+  if(!amt||isNaN(amt))return;
+  var per = Math.round(amt/SP_N*100)/100;
+  g('sp-per').textContent = fmt(per);
+  g('sp-sub').textContent = desc + ' / ' + SP_N + ' Personen / gesamt ' + fmt(amt);
+  var list = g('sp-people-list'); list.innerHTML='';
+  for(var i=0;i<SP_N;i++){
+    var row=document.createElement('div');row.className='er';
+    var ic=document.createElement('div');ic.className='ei';ic.textContent='P';
+    var inf=document.createElement('div');inf.className='en';
+    var nm=document.createElement('div');nm.className='enm';nm.textContent=SP_NAMES[i];
+    var nt=document.createElement('div');nt.className='ent';nt.textContent='schuldet';
+    inf.appendChild(nm);inf.appendChild(nt);
+    var am=document.createElement('div');am.className='ea';am.textContent=fmt(per);
+    row.appendChild(ic);row.appendChild(inf);row.appendChild(am);
+    list.appendChild(row);
+  }
+  g('sp-result').style.display='block';
+  g('sp-calc').style.display='none';
+  g('sp-amt').style.display='none';
+  g('sp-desc').style.display='none';
+  document.querySelector('#sp-ppl-row').style.display='none';
+  document.querySelector('[for="sp-ppl"]') && (document.querySelector('[for="sp-ppl"]').style.display='none');
+});
+
+g('sp-share').addEventListener('click',function(){
+  var amt = parseFloat(g('sp-amt').value||'0');
+  var desc = g('sp-desc').value||'Rechnung';
+  var data = btoa(JSON.stringify({a:amt,d:desc,n:SP_N,p:Math.round(amt/SP_N*100)/100}));
+  var url = window.location.href.split('?')[0].split('#')[0] + '?split=' + data;
+  if(navigator.share){
+    navigator.share({title:'Koinonia Split',text:desc+' / '+fmt(Math.round(amt/SP_N*100)/100)+' pro Person',url:url});
+  } else {
+    var ta=document.createElement('textarea');ta.value=url;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    g('sub').textContent='Link kopiert!';
+    setTimeout(function(){g('sub').textContent=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});},2000);
+  }
+});
+
+g('sp-new').addEventListener('click',function(){
+  g('sp-result').style.display='none';
+  g('sp-amt').style.display='block';g('sp-amt').value='';
+  g('sp-desc').style.display='block';g('sp-desc').value='';
+  g('sp-calc').style.display='block';
+  document.querySelector('#sp-ppl-row').style.display='flex';
+});
+
+// Check URL for split data on load
+(function(){
+  var params = window.location.search;
+  if(params.indexOf('split=') !== -1){
+    try{
+      var raw = params.split('split=')[1].split('&')[0];
+      var data = JSON.parse(atob(raw));
+      showTab('split');
+      g('sp-amt').value = data.a;
+      g('sp-desc').value = data.d;
+      SP_N = data.n;
+      document.querySelectorAll('#sp-ppl-row .pb').forEach(function(b){
+        b.classList.remove('on');
+        if(parseInt(b.getAttribute('data-n'))===data.n) b.classList.add('on');
+      });
+      g('sp-calc').click();
+    }catch(e){}
+  }
+})();
+
+// ── TRIPS ─────────────────────────────────────────────────────────────────────
+var TRIPS = lsGet('kn10-trips',[]);
+
+function drawTrips(){
+  var list = g('trips-list'); list.innerHTML='';
+  if(TRIPS.length===0){
+    var em=document.createElement('div');
+    em.style.cssText='text-align:center;padding:40px 0;color:rgba(255,255,255,.3);font-size:14px';
+    em.textContent='Keine Trips';
+    list.appendChild(em);return;
+  }
+  TRIPS.forEach(function(trip,ti){
+    var spent = trip.expenses ? trip.expenses.reduce(function(s,e){return s+e.amount;},0) : 0;
+    var pct = trip.budget > 0 ? Math.min((spent/trip.budget)*100,100) : 0;
+    var remaining = trip.budget - spent;
+    var col = pct < 60 ? '#10B981' : pct < 85 ? '#F59E0B' : '#EF4444';
+    var card=document.createElement('div');card.className='card';
+    card.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'
+      +'<div><div style="font-size:15px;font-weight:700">'+trip.icon+' '+trip.name+'</div>'
+      +'<div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px">'+trip.date+'</div></div>'
+      +'<div style="text-align:right"><div style="font-size:18px;font-weight:800;color:'+col+'">'+fmt(spent)+'</div>'
+      +'<div style="font-size:11px;color:rgba(255,255,255,.35)">von '+fmt(trip.budget)+'</div></div></div>'
+      +'<div class="bb"><div class="bf" style="width:'+pct+'%;background:'+col+'"></div></div>'
+      +'<div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px">'
+      +'<span style="color:rgba(255,255,255,.4)">'+(trip.expenses?trip.expenses.length:0)+' Ausgaben</span>'
+      +'<span style="color:'+col+'">'+(remaining>=0?fmt(remaining)+' uebrig':fmt(Math.abs(remaining))+' ueberzogen')+'</span></div>';
+
+    // Add expense button
+    var addBtn=document.createElement('button');
+    addBtn.style.cssText='width:100%;margin-top:10px;padding:9px;border-radius:10px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);font-size:13px;border:1px solid rgba(255,255,255,.1)';
+    addBtn.textContent='+ Ausgabe';
+    (function(idx){
+      addBtn.addEventListener('click',function(){openTripExpense(idx);});
+    })(ti);
+    card.appendChild(addBtn);
+
+    // Delete button
+    var delBtn=document.createElement('button');
+    delBtn.style.cssText='width:100%;margin-top:6px;padding:7px;border-radius:10px;background:rgba(239,68,68,.08);color:rgba(239,68,68,.5);font-size:12px;border:1px solid rgba(239,68,68,.15)';
+    delBtn.textContent='Trip loeschen';
+    (function(idx){
+      delBtn.addEventListener('click',function(){
+        TRIPS.splice(idx,1);lsSet('kn10-trips',TRIPS);drawTrips();
+      });
+    })(ti);
+    card.appendChild(delBtn);
+    list.appendChild(card);
+  });
+}
+
+function openNewTrip(){
+  openModal('Neuer Trip');
+  var body=g('m-b');
+  var icons=['Flug','Strand','Berg','Park','Hotel','Schiff','Auto','Ski'];
+  var selTripIcon='Flug';
+  var ig=document.createElement('div');ig.style.cssText='display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap';
+  icons.forEach(function(ico,i){
+    var b=document.createElement('button');
+    b.style.cssText='width:44px;height:44px;border-radius:10px;background:#1a1a1a;border:2px solid transparent;font-size:20px';
+    b.textContent=ico;
+    if(i===0) b.style.borderColor='#2563EB';
+    (function(icon,btn){
+      btn.addEventListener('click',function(){
+        selTripIcon=icon;
+        ig.querySelectorAll('button').forEach(function(x){x.style.borderColor='transparent';});
+        btn.style.borderColor='#2563EB';
+      });
+    })(ico,b);
+    ig.appendChild(b);
+  });
+  body.appendChild(ig);
+  [{id:'tn',ph:'Trip Name'},{id:'td',ph:'Datum z.B. Juni 2026'},{id:'tb',ph:'Budget in Euro',type:'number'}].forEach(function(f){
+    var inp=document.createElement('input');inp.id=f.id;inp.type=f.type||'text';
+    inp.className='inp';inp.placeholder=f.ph;
+    if(f.type==='number')inp.setAttribute('inputmode','decimal');
+    body.appendChild(inp);
+  });
+  var r2=document.createElement('div');r2.className='r2';
+  var ca=document.createElement('button');ca.className='bg2';ca.textContent='Abbrechen';ca.addEventListener('click',closeModal);
+  var sv=document.createElement('button');sv.className='bb2';sv.textContent='Trip erstellen';
+  sv.addEventListener('click',function(){
+    var name=g('tn').value.trim(),date=g('td').value.trim(),budget=parseFloat(g('tb').value)||0;
+    if(!name)return;
+    TRIPS.push({id:Date.now(),icon:selTripIcon,name:name,date:date,budget:budget,expenses:[]});
+    lsSet('kn10-trips',TRIPS);closeModal();drawTrips();
+  });
+  r2.appendChild(ca);r2.appendChild(sv);body.appendChild(r2);
+}
+
+function openTripExpense(ti){
+  openModal('Ausgabe: '+TRIPS[ti].name);
+  var body=g('m-b');
+  [{id:'te-l',ph:'Bezeichnung'},{id:'te-a',ph:'Betrag',type:'number'},{id:'te-n',ph:'Notiz'}].forEach(function(f){
+    var inp=document.createElement('input');inp.id=f.id;inp.type=f.type||'text';
+    inp.className='inp';inp.placeholder=f.ph;
+    if(f.type==='number')inp.setAttribute('inputmode','decimal');
+    body.appendChild(inp);
+  });
+  var r2=document.createElement('div');r2.className='r2';
+  var ca=document.createElement('button');ca.className='bg2';ca.textContent='Abbrechen';ca.addEventListener('click',closeModal);
+  var sv=document.createElement('button');sv.className='bb2';sv.textContent='Speichern';
+  sv.addEventListener('click',function(){
+    var lbl=g('te-l').value.trim(),amt=parseFloat(g('te-a').value)||0,note=g('te-n').value.trim();
+    if(!lbl||!amt)return;
+    if(!TRIPS[ti].expenses)TRIPS[ti].expenses=[];
+    TRIPS[ti].expenses.push({id:Date.now(),label:lbl,amount:amt,note:note,date:todayStr()});
+    lsSet('kn10-trips',TRIPS);closeModal();drawTrips();
+  });
+  r2.appendChild(ca);r2.appendChild(sv);body.appendChild(r2);
+}
+
+g('btnNewTrip').addEventListener('click',openNewTrip);
+
+
 draw();
+drawTrips();
 </script>
 
+<!-- SPLIT PAGE -->
+
+<div id="split" class="page" style="padding:0 16px 80px">
+  <div class="card">
+    <div style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">💸 Rechnung teilen</div>
+    <input id="sp-amt" type="number" class="inp" placeholder="Gesamtbetrag (€)" inputmode="decimal">
+    <input id="sp-desc" type="text" class="inp" placeholder="Beschreibung · z.B. Abendessen">
+    <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:8px">Personen</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px" id="sp-ppl-row">
+      <button class="pb on" data-n="2" style="flex:1">2</button>
+      <button class="pb" data-n="3" style="flex:1">3</button>
+      <button class="pb" data-n="4" style="flex:1">4</button>
+      <button class="pb" data-n="5" style="flex:1">5</button>
+      <button class="pb" data-n="6" style="flex:1">6</button>
+    </div>
+    <button id="sp-calc" class="bfull">Berechnen & Link teilen</button>
+  </div>
+  <div id="sp-result" style="display:none">
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:6px">PRO PERSON</div>
+      <div id="sp-per" style="font-size:44px;font-weight:800;letter-spacing:-2px;color:#10B981">€ 0</div>
+      <div id="sp-sub" style="font-size:12px;color:rgba(255,255,255,.35);margin-top:6px"></div>
+    </div>
+    <div class="card" id="sp-people-list" style="padding:8px 14px"></div>
+    <button id="sp-share" class="bfull" style="margin-top:4px;background:#10B981">📤 Link teilen</button>
+    <button id="sp-new" style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);font-size:14px;margin-top:8px">Neue Berechnung</button>
+  </div>
+</div>
+
+<!-- TRIPS PAGE -->
+
+<div id="trips" class="page" style="padding:0 16px 80px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div style="font-size:16px;font-weight:700">✈️ Meine Trips</div>
+    <button id="btnNewTrip" style="background:#2563EB;border-radius:10px;padding:7px 14px;color:#fff;font-size:13px;font-weight:700">+ Neuer Trip</button>
+  </div>
+  <div id="trips-list"></div>
+</div>
+
+```
+<button id="btnNewGoal" style="background:#2563EB;border-radius:10px;padding:7px 14px;color:#fff;font-size:13px;font-weight:700">+ Neues Ziel</button>
+```
+
+  </div>
+  <div id="goals-list"></div>
+</div>
 </body>
 </html>
+
+
+    
+
+
 
 
 
