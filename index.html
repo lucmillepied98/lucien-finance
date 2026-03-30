@@ -223,18 +223,6 @@ input,textarea{font-family:inherit;outline:none;-webkit-appearance:none}
   <button id="ios-close" style="width:100%;padding:13px;border-radius:12px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-size:14px;font-weight:600;border:none">Schliessen</button>
 </div>
 <script>
-var CATS=[
-{n:'Essen',i:[['food','\uD83C\uDF7D'],['coffee','\u2615'],['beer','\uD83C\uDF7A'],['wine','\uD83C\uDF77'],['burger','\uD83C\uDF54'],['pizza','\uD83C\uDF55'],['sushi','\uD83C\uDF63'],['wrap','\uD83C\uDF2F'],['cake','\uD83C\uDF70'],['icecream','\uD83C\uDF66'],['tea','\uD83C\uDF75'],['bread','\uD83E\uDD56'],['salad','\uD83E\uDD57'],['noodles','\uD83C\uDF5C'],['taco','\uD83C\uDF2E'],['fries','\uD83C\uDF5F'],['donut','\uD83C\uDF69']]},
-{n:'Transport',i:[['car','\uD83D\uDE97'],['plane','\u2708'],['scooter','\uD83D\uDEF4'],['train','\uD83D\uDE86'],['bus','\uD83D\uDE8C'],['bike','\uD83D\uDEB4'],['taxi','\uD83D\uDE95'],['ship','\uD83D\uDEA2'],['moto','\uD83C\uDFCD'],['truck','\uD83D\uDE9A']]},
-{n:'Shopping',i:[['cart','\uD83D\uDED2'],['bag','\uD83D\uDC5C'],['shoe','\uD83D\uDC5F'],['shirt','\uD83D\uDC55'],['dress','\uD83D\uDC57'],['hat','\uD83D\uDC52'],['glasses','\uD83D\uDC53'],['watch','\u231A'],['ring','\uD83D\uDC8D'],['gift','\uD83C\uDF81'],['market','\uD83C\uDFAA']]},
-{n:'Gesundheit',i:[['pill','\uD83D\uDC8A'],['hospital','\uD83C\uDFE5'],['muscle','\uD83D\uDCAA'],['heart','\u2764'],['spa','\uD83D\uDEC1'],['run','\uD83C\uDFC3'],['swim','\uD83C\uDFCA']]},
-{n:'Freizeit',i:[['fun','\uD83C\uDFAD'],['cinema','\uD83C\uDFAC'],['music','\uD83C\uDFB5'],['game','\uD83C\uDFAE'],['sport','\u26BD'],['book','\uD83D\uDCDA'],['guitar','\uD83C\uDFB8'],['ticket','\uD83C\uDFAB'],['party','\uD83C\uDF89'],['tennis','\uD83C\uDFBE'],['ski','\u26F7'],['dice','\uD83C\uDFB2']]},
-{n:'Reisen',i:[['hotel','\uD83C\uDFE8'],['tent','\u26FA'],['beach','\uD83C\uDFD6'],['mountain','\u26F0'],['luggage','\uD83E\uDDF3'],['camera','\uD83D\uDCF7'],['sun','\u2600'],['snow','\u2744'],['palm','\uD83C\uDF34'],['globe','\uD83C\uDF0D']]},
-{n:'Geld',i:[['cash','\uD83D\uDCB5'],['tax','\uD83C\uDFE6'],['chart','\uD83D\uDCC8'],['laptop','\uD83D\uDCBB'],['phone','\uD83D\uDCF1'],['key','\uD83D\uDD11'],['star','\u2B50'],['fire','\uD83D\uDD25']]},
-{n:'Pflege',i:[['scissors','\u2702'],['nail','\uD83D\uDC85'],['barber','\uD83D\uDC88'],['bath','\uD83D\uDEC1'],['parfum','\uD83D\uDC84']]},
-{n:'Zuhause',i:[['home','\uD83C\uDFE0'],['sofa','\uD83D\uDECB'],['tv','\uD83D\uDCFA'],['plant','\uD83E\uDEB4'],['flower','\uD83C\uDF37'],['clean','\uD83E\uDDF9'],['hammer','\uD83D\uDD28']]},
-{n:'Familie',i:[['baby','\uD83D\uDC76'],['family','\uD83D\uDC68'],['couple','\uD83D\uDC6B'],['heart2','\uD83D\uDC95'],['church','\u26EA'],['pray','\uD83D\uDE4F'],['birthday','\uD83C\uDF82']]}
-];
 var ICON_CATS=[
   {cat:'Essen',icons:[['food','\uD83C\uDF7D'],['coffee','\u2615'],['beer','\uD83C\uDF7A'],['wine','\uD83C\uDF77'],['cocktail','\uD83C\uDF78'],['burger','\uD83C\uDF54'],['pizza','\uD83C\uDF55'],['sushi','\uD83C\uDF63'],['wrap','\uD83C\uDF2F'],['cake','\uD83C\uDF70'],['icecream','\uD83C\uDF66'],['cookie','\uD83C\uDF6A'],['candy','\uD83C\uDF6C'],['popcorn','\uD83C\uDFF4'],['tea','\uD83C\uDF75'],['juice','\uD83E\uDD64'],['milk','\uD83E\uDD5B'],['egg','\uD83E\uDD5A'],['bread','\uD83E\uDD56'],['cheese','\uD83E\uDDC0'],['meat','\uD83E\uDD69'],['salad','\uD83E\uDD57'],['noodles','\uD83C\uDF5C'],['taco','\uD83C\uDF2E'],['fries','\uD83C\uDF5F'],['hotdog','\uD83C\uDF2D'],['pretzel','\uD83E\uDD68'],['waffle','\uD83E\uDDC7'],['donut','\uD83C\uDF69'],['pie','\uD83E\uDD67']]},
   {cat:'Transport',icons:[['car','\uD83D\uDE97'],['plane','\u2708'],['scooter','\uD83D\uDEF4'],['train','\uD83D\uDE86'],['bus','\uD83D\uDE8C'],['bike','\uD83D\uDEB4'],['taxi','\uD83D\uDE95'],['ship','\uD83D\uDEA2'],['heli','\uD83D\uDE81'],['rocket','\uD83D\uDE80'],['moto','\uD83C\uDFCD'],['truck','\uD83D\uDE9A'],['tram','\uD83D\uDE8A'],['sub','\uD83D\uDE87'],['cable','\uD83D\uDEA0'],['kick','\uD83D\uDEF5']]},
@@ -778,6 +766,9 @@ if(‘serviceWorker’ in navigator){window.addEventListener(‘load’,function
 
 </body>
 </html>
+
+
+
 
 
 
