@@ -9,15 +9,8 @@
 <meta name="apple-mobile-web-app-title" content="Koinonia">
 <meta name="theme-color" content="#000">
 <title>Koinonia</title>
-
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');
-
-</script>
-
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:430px;margin:0 auto;min-height:100vh}
@@ -79,7 +72,6 @@ input,textarea{font-family:inherit;outline:none;-webkit-appearance:none}
 .sel-chk{width:22px;height:22px;min-width:22px;border-radius:6px;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
 .sel-chk.on{background:#2563EB;border-color:#2563EB;color:#fff}
 </style>
-
 </head>
 <body>
 <div style="padding:52px 14px 12px;display:flex;justify-content:space-between;align-items:center">
@@ -115,7 +107,8 @@ input,textarea{font-family:inherit;outline:none;-webkit-appearance:none}
       <div class="st"><div class="stl">Woche</div><div id="h-ws2" class="stv">&#8364; 0</div></div>
       <div class="st"><div class="stl">Monat</div><div id="h-ms" class="stv" style="color:#60A5FA">&#8364; 0</div></div>
     </div>
-    <button id="btnWb" style="margin-top:12px;background:rgba(255,255,255,.07);border-radius:8px;padding:6px 12px;color:rgba(255,255,255,.35);font-size:11px">Budget aendern</button>
+    <div id="fix-info" style="font-size:11px;color:rgba(255,255,255,.25);margin-top:6px;margin-bottom:2px"></div>
+  <button id="btnWb" style="margin-top:12px;background:rgba(255,255,255,.07);border-radius:8px;padding:6px 12px;color:rgba(255,255,255,.35);font-size:11px">Budget aendern</button>
   </div>
   <div class="card" id="ins-card" style="display:none">
     <div style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Einblicke</div>
@@ -211,63 +204,63 @@ input,textarea{font-family:inherit;outline:none;-webkit-appearance:none}
 var ICONS=[['cart','\uD83D\uDED2'],['food','\uD83C\uDF7D'],['coffee','\u2615'],['car','\uD83D\uDE97'],['plane','\u2708'],['fun','\uD83C\uDFAD'],['shirt','\uD83D\uDC55'],['pill','\uD83D\uDC8A'],['phone','\uD83D\uDCF1'],['gift','\uD83C\uDF81'],['sport','\u26BD'],['beer','\uD83C\uDF7A'],['hotel','\uD83C\uDFE8'],['cinema','\uD83C\uDFAC'],['book','\uD83D\uDCDA'],['gym','\uD83D\uDCAA'],['music','\uD83C\uDFB5'],['wrap','\uD83C\uDF2F'],['cake','\uD83C\uDF70'],['scooter','\uD83D\uDEF4'],['ticket','\uD83C\uDFAB'],['tax','\uD83C\uDFE6'],['shoe','\uD83D\uDC5F'],['scissors','\u2702'],['nail','\uD83D\uDC85'],['cash','\uD83D\uDCB5'],['barber','\uD83D\uDC88'],['beauty','\uD83E\uDDF4'],['bag','\uD83D\uDC5C'],['market','\uD83C\uDFAA']];
 function gi(k){for(var i=0;i<ICONS.length;i++){if(ICONS[i][0]===k)return ICONS[i][1];}return '\uD83D\uDCB6';}
 var RULES=[['uber','car'],['bolt','scooter'],['taxi','car'],['bahn','car'],['bus','car'],['flug','plane'],['ticket','ticket'],['cafe','coffee'],['coffee','coffee'],['kaffee','coffee'],['restaurant','food'],['essen','food'],['burger','food'],['pizza','food'],['sushi','food'],['mcdonalds','food'],['lieferando','food'],['rewe','cart'],['edeka','cart'],['aldi','cart'],['lidl','cart'],['supermarkt','cart'],['dm','cart'],['rossmann','cart'],['amazon','cart'],['albert','cart'],['friseur','scissors'],['barbershop','barber'],['nail','nail'],['gym','gym'],['fitness','gym'],['sport','sport'],['kino','cinema'],['netflix','phone'],['spotify','music'],['hotel','hotel'],['airbnb','hotel'],['apotheke','pill'],['arzt','pill'],['bargeld','cash'],['atm','cash'],['bier','beer'],['bar','beer'],['drinks','beer'],['wein','beer'],['buch','book'],['geschenk','gift'],['kirche','gift'],['spende','gift'],['museum','fun'],['konzert','music'],['theater','fun']];
+// Fix/Variable detection
+var FIX_KW=['miete','warmmiete','kaltmiete','strom','gas','internet','handy',
+  'netflix','spotify','amazon prime','disney','apple','dazn','sky',
+  'versicherung','krankenversicherung','haftpflicht',
+  'fitnessstudio','mcfit','mitglied','beitrag','abo',
+  'kredit','rate','darlehen','tilgung','leasing',
+  'kindergarten','kita','parkplatz','garage','rundfunk','gez',
+  'vodafone','telekom','o2 '];
+var VAR_KW=['uber','bolt','taxi','restaurant','essen','bar','drinks',
+  'kino','friseur','naegel','coffee','cafe','supermarkt','rewe',
+  'edeka','aldi','lidl','bargeld','atm','konzert','hotel','airbnb'];
+
+function isFixkosten(label,amount){
+if(!label)return false;
+var l=’ ‘+label.toLowerCase()+’ ’;
+for(var i=0;i<FIX_KW.length;i++){if(l.indexOf(FIX_KW[i])!==-1)return true;}
+for(var j=0;j<VAR_KW.length;j++){if(l.indexOf(VAR_KW[j])!==-1)return false;}
+if(typeof EXP!==‘undefined’&&EXP){
+var cnt=0;
+for(var k=0;k<EXP.length;k++){
+if(EXP[k].label&&EXP[k].label.toLowerCase()===label.toLowerCase()&&Math.abs(EXP[k].amount-amount)<5)cnt++;
+}
+if(cnt>=2)return true;
+}
+if(amount>=500)return true;
+return false;
+}
+
 function autoEmoji(l){var s=l.toLowerCase();for(var i=0;i<RULES.length;i++){if(s.indexOf(RULES[i][0])!==-1)return RULES[i][1];}return null;}
 function lsGet(k,fb){try{var v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
-var EXP=lsGet('kn11-exp',[]);
-var WB=lsGet('kn11-wb',400);
-var MB=lsGet('kn11-mb',1500);
-var TRIPS=lsGet('kn11-trips',[]);
-var SICON='cart';
+var EXP=lsGet(‘kn11-exp’,[]);
+var WB=lsGet(‘kn11-wb’,400);
+var MB=lsGet(‘kn11-mb’,1500);
+var TRIPS=lsGet(‘kn11-trips’,[]);
+var SICON=‘cart’;
 var SP_N=2;
 var SP_PEOPLE=[];
 var SELECTED={};
-function fmt(n){return '\u20AC\u202F'+Number(n).toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:2});}
-function today(){return new Date().toISOString().split('T')[0];}
+function fmt(n){return ‘\u20AC\u202F’+Number(n).toLocaleString(‘de-DE’,{minimumFractionDigits:0,maximumFractionDigits:2});}
+function today(){return new Date().toISOString().split(‘T’)[0];}
 function isToday(d){return new Date(d).toDateString()===new Date().toDateString();}
 function isWeek(d){var now=new Date(),dt=new Date(d),day=now.getDay()||7;var mon=new Date(now);mon.setDate(now.getDate()-day+1);mon.setHours(0,0,0,0);var sun=new Date(mon);sun.setDate(mon.getDate()+6);sun.setHours(23,59,59,999);return dt>=mon&&dt<=sun;}
 function isMonth(d){var n=new Date(),dt=new Date(d);return dt.getMonth()===n.getMonth()&&dt.getFullYear()===n.getFullYear();}
-function scCol(p){return p<60?'#10B981':p<85?'#F59E0B':'#EF4444';}
+function scCol(p){return p<60?’#10B981’:p<85?’#F59E0B’:’#EF4444’;}
 function g(id){return document.getElementById(id);}
 function el(tag){return document.createElement(tag);}
 function calcHome(){
-  var ws=0,ts=0,ms=0,fixMs=0;
-  EXP.forEach(function(e){
-    var fix=isFixed(e.label,e.amount);
-    if(fix){if(isMonth(e.date))fixMs+=e.amount;return;}
-    if(isWeek(e.date))ws+=e.amount;
-    if(isToday(e.date))ts+=e.amount;
-    if(isMonth(e.date))ms+=e.amount;
-  });
-  return{ws:ws,ts:ts,ms:ms,fixMs:fixMs,wp:Math.min((ws/WB)*100,100)};
-}
-
-// ── FIX vs VARIABEL ──────────────────────────────────────────────────────────
-var FIX_KW=[‘miete’,‘warmmiete’,‘kaltmiete’,‘nebenkosten’,‘strom’,‘gas’,‘wasser’,
-‘heizung’,‘krankenversicherung’,’ kv ’,‘versicherung’,‘haftpflicht’,
-‘netflix’,‘spotify’,‘amazon prime’,‘disney’,‘apple tv’,‘dazn’,‘sky’,
-‘apple music’,‘youtube’,‘adobe’,‘microsoft’,‘office 365’,
-‘handy’,‘handyvertrag’,‘internet’,‘dsl’,‘vodafone’,‘telekom’,’o2 ‘,
-‘fitnessstudio’,‘mcfit’,‘clever fit’,‘holmes’,
-‘mitglied’,‘beitrag’,’ abo ’,‘abonnement’,‘subscription’,
-’rate ’,‘kredit’,‘darlehen’,‘tilgung’,‘leasing’,
-‘altersvorsorge’,‘riester’,‘ruerup’,‘sparplan’,
-‘kindergarten’,‘kita’,‘schulgeb’,‘studgeb’,‘iu geb’,
-‘parkplatz’,‘stellplatz’,‘garage’,‘tiefgarage’,
-‘rundfunk’,‘gez’];
-
-var VAR_KW=[‘uber’,‘bolt’,‘taxi’,‘restaurant’,’essen ’,’bar ’,‘drinks’,‘kino’,
-‘friseur’,‘naegel’,‘massage’,’spa ’,‘beauty’,‘coffee’,‘cafe’,‘kaffee’,
-‘supermarkt’,‘rewe’,‘edeka’,‘aldi’,‘lidl’,‘penny’,’netto ’,
-‘bargeld’,‘atm’,‘abhebung’,‘cash’,‘konzert’,‘museum’,‘hotel’,‘airbnb’];
-
-function isFixkosten(label,amount){
-var l=’ ‘+label.toLowerCase()+’ ‘;
-for(var i=0;i<FIX_KW.length;i++){if(l.indexOf(FIX_KW[i])!==-1)return true;}
-for(var j=0;j<VAR_KW.length;j++){if(l.indexOf(VAR_KW[j])!==-1)return false;}
-if(amount>=200&&amount%10===0)return true;
-if(amount>=500)return true;
-return false;
+var ws=0,ts=0,ms=0,fixMs=0;
+EXP.forEach(function(e){
+var fix=isFixkosten(e.label,e.amount);
+if(fix){if(isMonth(e.date))fixMs+=e.amount;return;}
+if(isWeek(e.date))ws+=e.amount;
+if(isToday(e.date))ts+=e.amount;
+if(isMonth(e.date))ms+=e.amount;
+});
+return{ws:ws,ts:ts,ms:ms,fixMs:fixMs,wp:Math.min((ws/WB)*100,100)};
 }
 function calcFc(){var now=new Date(),dom=now.getDate(),dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();var ms=EXP.filter(function(e){return isMonth(e.date);}).reduce(function(s,e){return s+e.amount;},0);var dr=dom>0?ms/dom:0,fore=dr*dim,bl=MB-ms,dl=dim-dom;return{ms:ms,fore:fore,diff:fore-MB,dom:dom,dim:dim,dr:dr,bl:bl,dleft:dl>0?bl/dl:0};}
 function makeRow(e){
@@ -287,6 +280,8 @@ return row;
 }
 function draw(){
 var st=calcHome(),sc=scCol(st.wp);
+var fixI=g(‘fix-info’);
+if(fixI){var fc2=calcHome();fixI.textContent=fc2.fixMs>0?‘Fixkosten ausgeblendet: ‘+fmt(fc2.fixMs):’’;}
 g(‘sub’).textContent=new Date().toLocaleDateString(‘de-DE’,{weekday:‘long’,day:‘numeric’,month:‘long’,year:‘numeric’});
 g(‘h-ws’).textContent=fmt(st.ws);g(‘h-ws’).style.color=sc;
 g(‘h-of’).textContent=‘von ‘+fmt(WB);
@@ -294,11 +289,11 @@ g(‘h-bar’).style.width=st.wp+’%’;g(‘h-bar’).style.background=sc;
 g(‘h-st’).textContent=st.wp<60?‘Im Budget’:st.wp<85?‘Aufpassen’:‘Fast voll’;g(‘h-st’).style.color=sc;
 var lft=WB-st.ws;g(‘h-lf’).textContent=lft>=0?fmt(lft)+’ uebrig’:fmt(Math.abs(lft))+’ ueberzogen’;
 g(‘h-ts’).textContent=fmt(st.ts);g(‘h-ws2’).textContent=fmt(st.ws);g(‘h-ws2’).style.color=sc;g(‘h-ms’).textContent=fmt(st.ms);
-if(g(‘fix-badge’))g(‘fix-badge’).textContent=fmt(st.fixMs);
 drawInsights(st);
 var rec=g(‘h-rec’);rec.innerHTML=’’;
-if(EXP.length===0){var em=el(‘div’);em.style.cssText=‘text-align:center;padding:18px 0;color:rgba(255,255,255,.3);font-size:13px’;em.textContent=‘Noch keine Ausgaben’;rec.appendChild(em);}
-else{EXP.slice(0,6).forEach(function(e){rec.appendChild(makeRow(e));});}
+var varE=EXP.filter(function(e){return !isFixkosten(e.label,e.amount);});
+if(varE.length===0){var em=el(‘div’);em.style.cssText=‘text-align:center;padding:18px 0;color:rgba(255,255,255,.3);font-size:13px’;em.textContent=‘Noch keine variablen Ausgaben’;rec.appendChild(em);}
+else{varE.slice(0,6).forEach(function(e){rec.appendChild(makeRow(e));});}
 var fc=calcFc(),fcCol=fc.diff>20?’#EF4444’:fc.diff>-50?’#F59E0B’:’#10B981’;
 g(‘fc-big’).textContent=fmt(fc.fore);g(‘fc-big’).style.color=fcCol;
 g(‘fc-bud’).textContent=‘Budget: ‘+fmt(MB);
@@ -312,8 +307,7 @@ g(‘fc-sp’).textContent=fmt(fc.ms);g(‘fc-dr’).textContent=fmt(fc.dr);
 g(‘fc-bl’).textContent=fmt(Math.max(fc.bl,0));g(‘fc-bl’).style.color=fc.bl>0?’#10B981’:’#EF4444’;
 g(‘fc-dl’).textContent=fmt(Math.max(fc.dleft,0));g(‘fc-dl’).style.color=fc.dleft>30?’#10B981’:fc.dleft>10?’#F59E0B’:’#EF4444’;
 g(‘mb-d’).textContent=fmt(MB);
-var varOnly=varExp();
-var tot=varOnly.reduce(function(s,e){return s+e.amount;},0);
+var tot=EXP.reduce(function(s,e){return s+e.amount;},0);
 g(‘all-t’).textContent=fmt(tot);g(‘all-c’).textContent=EXP.length+’ Eintraege’;
 var al=g(‘all-l’);al.innerHTML=’’;
 if(EXP.length===0){var ae=el(‘div’);ae.style.cssText=‘text-align:center;padding:24px 0;color:rgba(255,255,255,.3);font-size:13px’;ae.textContent=‘Noch keine Ausgaben’;al.appendChild(ae);}
@@ -408,8 +402,7 @@ var delBtn=el(‘button’);delBtn.style.cssText=‘width:100%;margin-top:6px;pa
 list.appendChild(card);
 });
 }
-function showTab(id){
-track(‘tab_view’, {tab_name: id});[‘home’,‘forecast’,‘all’,‘split’,‘trips’].forEach(function(p){g(p).classList.remove(‘on’);g(‘t-’+p).classList.remove(‘on’);});g(id).classList.add(‘on’);g(‘t-’+id).classList.add(‘on’);if(id===‘trips’)drawTrips();}
+function showTab(id){[‘home’,‘forecast’,‘all’,‘split’,‘trips’].forEach(function(p){g(p).classList.remove(‘on’);g(‘t-’+p).classList.remove(‘on’);});g(id).classList.add(‘on’);g(‘t-’+id).classList.add(‘on’);if(id===‘trips’)drawTrips();}
 function openModal(title){g(‘m-title’).textContent=title;g(‘m-body’).innerHTML=’’;g(‘ov’).classList.add(‘on’);document.body.style.overflow=‘hidden’;}
 function closeModal(){g(‘ov’).classList.remove(‘on’);g(‘m-body’).innerHTML=’’;document.body.style.overflow=’’;}
 function openAdd(){
@@ -539,7 +532,6 @@ g(‘sp-remainder’).style.color=Math.abs(rem)<0.01?’#10B981’:rem>0?’#F59
 g(‘sp-rem-lbl’).textContent=rem>=0?‘Nicht aufgeteilt’:‘Zu viel’;
 }
 g(‘sp-go’).addEventListener(‘click’,function(){
-track(‘split_calculated’, {people: SP_N});
 var amt=parseFloat(g(‘sp-amt’).value.replace(’,’,’.’));var desc=g(‘sp-desc’).value.trim()||‘Rechnung’;if(!amt||isNaN(amt))return;
 g(‘sp-names-area’).querySelectorAll(‘input’).forEach(function(inp,i){if(!SP_PEOPLE[i])SP_PEOPLE[i]={name:’’,amount:0,locked:false};SP_PEOPLE[i].name=inp.value.trim();SP_PEOPLE[i].locked=false;});
 buildSplitResult(amt,desc);
@@ -552,7 +544,9 @@ var url=window.location.href.split(’?’)[0]+’?data=’+data;
 var txt=SP_PEOPLE.map(function(p,i){return (p.name||‘Person ‘+(i+1))+’: ‘+fmt(p.amount);}).join(’\n’);
 if(navigator.share){navigator.share({title:‘Koinonia Split’,text:desc+’\n’+txt,url:url});}
 else{try{var ta=el(‘textarea’);ta.value=url;ta.style.cssText=‘position:fixed;opacity:0’;document.body.appendChild(ta);ta.select();document.execCommand(‘copy’);document.body.removeChild(ta);}catch(x){}
-g(‘sub’).textContent=‘Link kopiert!’;setTimeout(function(){g(‘sub’).textContent=new Date().toLocaleDateString(‘de-DE’,{weekday:‘long’,day:‘numeric’,month:‘long’,year:‘numeric’});},2000);}
+g(‘sub’).textContent=‘Link kopiert!’;setTimeout(function(){var fixI=g(‘fix-info’);
+if(fixI){var fc2=calcHome();fixI.textContent=fc2.fixMs>0?‘Fixkosten ausgeblendet: ‘+fmt(fc2.fixMs):’’;}
+g(‘sub’).textContent=new Date().toLocaleDateString(‘de-DE’,{weekday:‘long’,day:‘numeric’,month:‘long’,year:‘numeric’});},2000);}
 });
 g(‘sp-reset’).addEventListener(‘click’,function(){
 g(‘sp-amt’).value=’’;g(‘sp-desc’).value=’’;SP_N=2;SP_PEOPLE=[{name:’’,amount:0,locked:false},{name:’’,amount:0,locked:false}];
@@ -604,11 +598,6 @@ selAll.addEventListener(‘click’,function(){EXP.forEach(function(e){SELECTED[
 refresh();
 }
 function buildShareLink(items,paypal,iban){
-track(‘share_link_created’, {
-item_count: items.length,
-has_paypal: !!paypal,
-has_iban: !!iban
-});
 var data={items:items.map(function(e){return{l:e.label,a:e.amount,d:e.date,i:e.icon};}),pp:paypal,ib:iban,type:‘share’};
 var encoded;try{encoded=btoa(unescape(encodeURIComponent(JSON.stringify(data))));}catch(x){encoded=btoa(JSON.stringify(data));}
 var url=window.location.href.split(’?’)[0]+’?data=’+encoded;
@@ -654,8 +643,7 @@ var tb=el(‘input’);tb.type=‘number’;tb.className=‘inp’;tb.placeholde
 var r2=el(‘div’);r2.className=‘r2’;
 var ca=el(‘button’);ca.className=‘btn-gray’;ca.textContent=‘Abbrechen’;ca.addEventListener(‘click’,closeModal);
 var sv=el(‘button’);sv.className=‘btn-blue’;sv.textContent=‘Erstellen’;
-sv.addEventListener(‘click’,function(){var name=tn.value.trim(),date=td.value.trim(),budget=parseFloat(tb.value)||0;if(!name)return;
-TRIPS.push({id:Date.now(),name:name,date:date,budget:budget,expenses:[]});lsSet(‘kn11-trips’,TRIPS);closeModal();drawTrips();});
+sv.addEventListener(‘click’,function(){var name=tn.value.trim(),date=td.value.trim(),budget=parseFloat(tb.value)||0;if(!name)return;TRIPS.push({id:Date.now(),name:name,date:date,budget:budget,expenses:[]});lsSet(‘kn11-trips’,TRIPS);closeModal();drawTrips();});
 r2.appendChild(ca);r2.appendChild(sv);body.appendChild(r2);
 }
 function openTripExp(ti){
@@ -696,19 +684,127 @@ g(‘btnAdd’).addEventListener(‘click’,openAdd);
 g(‘btnShare’).addEventListener(‘click’,openShareSelect);
 g(‘btnAllLink’).addEventListener(‘click’,function(){showTab(‘all’);});
 g(‘btnWb’).addEventListener(‘click’,function(){openBudget(‘week’);});
-g(‘btnFixInfo’).addEventListener(‘click’,openFixModal);
 g(‘btnMb’).addEventListener(‘click’,function(){openBudget(‘month’);});
 g(‘btnReset’).addEventListener(‘click’,openReset);
 g(‘btnNewTrip’).addEventListener(‘click’,openNewTrip);
 g(‘m-close’).addEventListener(‘click’,closeModal);
 g(‘ov’).addEventListener(‘click’,function(ev){if(ev.target===this)closeModal();});
-
 draw();
 
+// ── FIX vs VARIABEL ──────────────────────────────────────────────────────────
+var FIX_KW=[‘miete’,‘warmmiete’,‘kaltmiete’,‘nebenkosten’,‘strom’,‘gas’,‘wasser’,
+‘heizung’,‘krankenversicherung’,’ kv ’,‘versicherung’,‘haftpflicht’,
+‘netflix’,‘spotify’,‘amazon prime’,‘disney’,‘apple tv’,‘dazn’,‘sky’,
+‘apple music’,‘youtube’,‘adobe’,‘microsoft’,‘office 365’,
+‘handy’,‘handyvertrag’,‘internet’,‘dsl’,‘vodafone’,‘telekom’,’o2 ‘,
+‘fitnessstudio’,‘mcfit’,‘clever fit’,‘holmes’,
+‘mitglied’,‘beitrag’,’ abo ’,‘abonnement’,‘subscription’,
+’rate ’,‘kredit’,‘darlehen’,‘tilgung’,‘leasing’,
+‘altersvorsorge’,‘riester’,‘ruerup’,‘sparplan’,
+‘kindergarten’,‘kita’,‘schulgeb’,‘studgeb’,‘iu geb’,
+‘parkplatz’,‘stellplatz’,‘garage’,‘tiefgarage’,
+‘rundfunk’,‘gez’];
+
+var VAR_KW=[‘uber’,‘bolt’,‘taxi’,‘restaurant’,’essen ’,’bar ’,‘drinks’,‘kino’,
+‘friseur’,‘naegel’,‘massage’,’spa ’,‘beauty’,‘coffee’,‘cafe’,‘kaffee’,
+‘supermarkt’,‘rewe’,‘edeka’,‘aldi’,‘lidl’,‘penny’,’netto ’,
+‘bargeld’,‘atm’,‘abhebung’,‘cash’,‘konzert’,‘museum’,‘hotel’,‘airbnb’];
+
+function isFixkosten(label,amount){
+var l=’ ‘+label.toLowerCase()+’ ’;
+for(var i=0;i<FIX_KW.length;i++){if(l.indexOf(FIX_KW[i])!==-1)return true;}
+for(var j=0;j<VAR_KW.length;j++){if(l.indexOf(VAR_KW[j])!==-1)return false;}
+if(amount>=200&&amount%10===0)return true;
+if(amount>=500)return true;
+return false;
+}
+
+function openFixModal(){
+openModal(‘Fixkosten diesen Monat’);
+var body=g(‘m-body’);
+var fixExp=EXP.filter(function(e){return e.fix&&isMonth(e.date);});
+var tot=fixExp.reduce(function(s,e){return s+e.amount;},0);
+if(fixExp.length===0){
+var em=el(‘div’);em.style.cssText=‘text-align:center;padding:20px;color:rgba(255,255,255,.4);font-size:14px’;
+em.textContent=‘Keine Fixkosten erkannt’;body.appendChild(em);
+} else {
+var info=el(‘div’);info.style.cssText=‘background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:14px;margin-bottom:14px;text-align:center’;
+info.innerHTML=’<div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">KI hat erkannt und ausgeblendet</div>’
++’<div style="font-size:26px;font-weight:800;color:#60A5FA">’+fmt(tot)+’</div>’
++’<div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:4px">Fixkosten diesen Monat</div>’;
+body.appendChild(info);
+fixExp.forEach(function(e){
+var row=el(‘div’);row.style.cssText=‘display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)’;
+var l=el(‘div’);
+var nm=el(‘div’);nm.style.cssText=‘font-size:14px;font-weight:500’;nm.textContent=e.label;
+var dt=el(‘div’);dt.style.cssText=‘font-size:11px;color:rgba(255,255,255,.35);margin-top:2px’;
+dt.textContent=new Date(e.date).toLocaleDateString(‘de-DE’,{day:‘numeric’,month:‘short’});
+l.appendChild(nm);l.appendChild(dt);
+var r=el(‘div’);r.style.cssText=‘display:flex;align-items:center;gap:8px’;
+var am=el(‘div’);am.style.cssText=‘font-size:14px;font-weight:700;color:rgba(255,255,255,.5)’;am.textContent=fmt(e.amount);
+var tog=el(‘button’);tog.style.cssText=‘background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:6px;padding:4px 8px;color:rgba(239,68,68,.6);font-size:11px’;
+tog.textContent=‘Variabel?’;
+(function(eid){tog.addEventListener(‘click’,function(){
+for(var i=0;i<EXP.length;i++){if(EXP[i].id===eid){EXP[i].fix=false;break;}}
+lsSet(‘kn11-exp’,EXP);closeModal();draw();
+});})(e.id);
+r.appendChild(am);r.appendChild(tog);row.appendChild(l);row.appendChild(r);body.appendChild(row);
+});
+}
+var note=el(‘div’);note.style.cssText=‘font-size:11px;color:rgba(255,255,255,.25);text-align:center;margin-top:16px;line-height:1.5’;
+note.textContent=‘KI erkennt Fixkosten automatisch. Tippe Variabel wenn falsch erkannt.’;
+body.appendChild(note);
+var cl=el(‘button’);cl.className=‘btn-full’;cl.style.marginTop=‘12px’;cl.textContent=‘OK’;
+cl.addEventListener(‘click’,closeModal);body.appendChild(cl);
+}
+
+</script>
+
+<div id="ib" style="display:none;position:fixed;bottom:80px;left:14px;right:14px;background:#111;border:1px solid #2563EB;border-radius:16px;padding:14px 16px;z-index:8888;box-shadow:0 8px 32px rgba(0,0,0,.8)">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="width:44px;height:44px;background:#2563EB;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;flex-shrink:0">K</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:14px;font-weight:700;color:#fff">Koinonia installieren</div>
+      <div id="ib-sub" style="font-size:11px;color:rgba(255,255,255,.45);margin-top:2px">Zum Homescreen hinzufuegen</div>
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0">
+      <button id="ib-no" style="padding:7px 10px;border-radius:8px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);font-size:13px;border:none;cursor:pointer">Nein</button>
+      <button id="ib-yes" style="padding:7px 14px;border-radius:8px;background:#2563EB;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer">Ja</button>
+    </div>
+  </div>
+</div>
+<script>
+var deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();deferredPrompt=e;
+  setTimeout(function(){document.getElementById('ib').style.display='block';},5000);
+});
+document.getElementById('ib-yes').addEventListener('click',function(){
+  document.getElementById('ib').style.display='none';
+  if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;});}
+});
+document.getElementById('ib-no').addEventListener('click',function(){
+  document.getElementById('ib').style.display='none';
+  localStorage.setItem('ib-dismissed','1');
+});
+var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+var isStandalone=window.navigator.standalone;
+var dismissed=localStorage.getItem('ib-dismissed');
+if(isIOS&&!isStandalone&&!dismissed){
+  setTimeout(function(){
+    document.getElementById('ib').style.display='block';
+    document.getElementById('ib-sub').textContent='Tippe das Teilen-Symbol, dann "Zum Home-Bildschirm"';
+    document.getElementById('ib-yes').style.display='none';
+  },5000);
+}
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  });
+}
 </script>
 </body>
 </html>
-
   
 
   
