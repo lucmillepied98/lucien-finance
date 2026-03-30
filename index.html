@@ -156,6 +156,11 @@ input,textarea{font-family:inherit;outline:none;-webkit-appearance:none}
 </div>
 <!-- SPLIT -->
 <div id="split" class="page" style="padding:0 14px 80px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.6)">Gruppen</div>
+    <button id="btnNewGroup" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:5px 12px;color:#60A5FA;font-size:12px;font-weight:600">+ Gruppe</button>
+  </div>
+  <div id="groups-list" style="margin-bottom:14px"></div>
   <div class="card" id="split-input-card">
     <div style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">Rechnung teilen</div>
     <input id="sp-amt" type="number" inputmode="decimal" class="inp" placeholder="Gesamtbetrag">
@@ -726,7 +731,7 @@ g(‘btnWb’).addEventListener(‘click’,function(){openBudget(‘week’);})
 g(‘btnMb’).addEventListener(‘click’,function(){openBudget(‘month’);});
 g(‘btnReset’).addEventListener(‘click’,openReset);
 g(‘btnNewTrip’).addEventListener(‘click’,openNewTrip);
-g(‘btnNewGroup’).addEventListener(‘click’,openNewGroup);
+var bng=g(‘btnNewGroup’);if(bng)bng.addEventListener(‘click’,openNewGroup);
 g(‘m-close’).addEventListener(‘click’,closeModal);
 g(‘ov’).addEventListener(‘click’,function(ev){if(ev.target===this)closeModal();});
 draw();
@@ -776,7 +781,6 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
 </script>
 </body>
 </html>
-
 
 
 
