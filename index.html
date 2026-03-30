@@ -8,7 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Koinonia">
 <meta name="theme-color" content="#000">
-<title>Koinonia</title>
+<title>Koinonia v2</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <style>
@@ -773,11 +774,11 @@ g(‘ios-close’).addEventListener(‘click’,function(){g(‘ios-guide’).st
 var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
 if(isIOS&&!window.navigator.standalone&&!localStorage.getItem(‘ib-dismissed’)){setTimeout(function(){g(‘ios-guide’).style.display=‘block’;},5000);}
 if(‘serviceWorker’ in navigator){window.addEventListener(‘load’,function(){navigator.serviceWorker.register(’/sw.js’).catch(function(){});});}
-draw();
 </script>
 
 </body>
 </html>
+
 
 
 
