@@ -390,7 +390,7 @@ var card=el(‘div’);card.style.cssText=‘background:#1a1a1a;border-radius:12
 var av=el(‘div’);av.style.cssText=‘width:38px;height:38px;min-width:38px;border-radius:10px;background:#2563EB;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff’;av.textContent=grp.name.charAt(0).toUpperCase();
 var inf=el(‘div’);inf.style.flex=‘1’;
 var nm=el(‘div’);nm.style.cssText=‘font-size:14px;font-weight:700;color:#fff’;nm.textContent=grp.name;
-var mb=el(‘div’);mb.style.cssText=‘font-size:11px;color:rgba(255,255,255,.4);margin-top:2px’;mb.textContent=grp.members.join(’ · ’);
+var mb=el(‘div’);mb.style.cssText=‘font-size:11px;color:rgba(255,255,255,.4);margin-top:2px’;mb.textContent=grp.members.join(’ | ’);
 inf.appendChild(nm);inf.appendChild(mb);
 var use=el(‘button’);use.style.cssText=‘background:#2563EB;border-radius:8px;padding:6px 12px;color:#fff;font-size:12px;font-weight:600;flex-shrink:0’;use.textContent=‘Nutzen’;
 (function(group){use.addEventListener(‘click’,function(){SP_N=group.members.length;SP_PEOPLE=group.members.map(function(m){return{name:m,amount:0,locked:false};});g(‘sp-btns’).querySelectorAll(‘button’).forEach(function(b){b.classList.remove(‘on’);if(parseInt(b.getAttribute(‘data-n’))===SP_N)b.classList.add(‘on’);});buildNamesArea();g(‘split-input-card’).scrollIntoView({behavior:‘smooth’});});})(grp);
@@ -776,6 +776,10 @@ if('serviceWorker' in navigator){window.addEventListener('load',function(){navig
 </script>
 </body>
 </html>
+
+
+
+
 
   
 
