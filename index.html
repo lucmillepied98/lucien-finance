@@ -156,10 +156,7 @@ input,textarea{font-family:inherit;outline:none;-webkit-appearance:none}
 </div>
 <!-- SPLIT -->
 <div id="split" class="page" style="padding:0 14px 80px">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-    <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.6)">Gruppen</div>
-    <button id="btnNewGroup" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:5px 12px;color:#60A5FA;font-size:12px;font-weight:600">+ Gruppe</button>
-  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.6)">Gruppen</div><button id="btnNewGroup" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:5px 12px;color:#60A5FA;font-size:12px;font-weight:600">+ Gruppe</button></div>
   <div id="groups-list" style="margin-bottom:14px"></div>
   <div class="card" id="split-input-card">
     <div style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">Rechnung teilen</div>
@@ -207,62 +204,51 @@ input,textarea{font-family:inherit;outline:none;-webkit-appearance:none}
 
 <div id="ib" style="display:none;position:fixed;bottom:80px;left:14px;right:14px;background:#111;border:1px solid #2563EB;border-radius:16px;padding:16px;z-index:8888;box-shadow:0 8px 32px rgba(0,0,0,.9)">
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
-    <div style="width:48px;height:48px;background:#2563EB;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;flex-shrink:0">K</div>
-    <div style="flex:1"><div style="font-size:15px;font-weight:700;color:#fff">Koinonia installieren</div><div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:3px">Zum Homescreen hinzufuegen</div></div>
+    <div style="width:48px;height:48px;background:#2563EB;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;flex-shrink:0">K</div>
+    <div><div style="font-size:15px;font-weight:700;color:#fff">Koinonia installieren</div><div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:3px">Zum Homescreen</div></div>
   </div>
   <div style="display:flex;gap:10px">
-    <button id="ib-no" style="flex:1;padding:12px;border-radius:10px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-size:14px;font-weight:600;border:1px solid rgba(255,255,255,.1)">Nein danke</button>
-    <button id="ib-yes" style="flex:1;padding:12px;border-radius:10px;background:#2563EB;color:#fff;font-size:14px;font-weight:700;border:none">Ja, installieren</button>
+    <button id="ib-no" style="flex:1;padding:12px;border-radius:10px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-size:14px;font-weight:600;border:1px solid rgba(255,255,255,.1)">Nein</button>
+    <button id="ib-yes" style="flex:1;padding:12px;border-radius:10px;background:#2563EB;color:#fff;font-size:14px;font-weight:700;border:none">Ja</button>
   </div>
 </div>
 <div id="ios-guide" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #2563EB;border-radius:20px 20px 0 0;padding:20px 20px 44px;z-index:8888">
-  <div style="text-align:center;margin-bottom:16px">
-    <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px">App installieren</div>
-    <div style="font-size:13px;color:rgba(255,255,255,.5)">3 einfache Schritte:</div>
-  </div>
+  <div style="text-align:center;margin-bottom:16px"><div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px">App installieren</div><div style="font-size:13px;color:rgba(255,255,255,.5)">3 Schritte:</div></div>
   <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
-    <div style="display:flex;align-items:center;gap:12px;background:#1a1a1a;border-radius:12px;padding:12px">
-      <div style="width:32px;height:32px;background:#2563EB;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:700;flex-shrink:0">1</div>
-      <div style="font-size:13px;color:#fff">Tippe das <strong>Teilen Symbol</strong> unten in Safari</div>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px;background:#1a1a1a;border-radius:12px;padding:12px">
-      <div style="width:32px;height:32px;background:#2563EB;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:700;flex-shrink:0">2</div>
-      <div style="font-size:13px;color:#fff">Scrolle und tippe <strong>"Zum Home-Bildschirm"</strong></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px;background:#1a1a1a;border-radius:12px;padding:12px">
-      <div style="width:32px;height:32px;background:#10B981;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:700;flex-shrink:0">3</div>
-      <div style="font-size:13px;color:#fff">Tippe <strong>"Hinzufuegen"</strong> oben rechts</div>
-    </div>
+    <div style="display:flex;align-items:center;gap:12px;background:#1a1a1a;border-radius:12px;padding:12px"><div style="width:32px;height:32px;background:#2563EB;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0">1</div><div style="font-size:13px;color:#fff">Tippe das <b>Teilen Symbol</b> unten</div></div>
+    <div style="display:flex;align-items:center;gap:12px;background:#1a1a1a;border-radius:12px;padding:12px"><div style="width:32px;height:32px;background:#2563EB;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0">2</div><div style="font-size:13px;color:#fff">Tippe <b>"Zum Home-Bildschirm"</b></div></div>
+    <div style="display:flex;align-items:center;gap:12px;background:#1a1a1a;border-radius:12px;padding:12px"><div style="width:32px;height:32px;background:#10B981;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0">3</div><div style="font-size:13px;color:#fff">Tippe <b>"Hinzufuegen"</b></div></div>
   </div>
   <button id="ios-close" style="width:100%;padding:13px;border-radius:12px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-size:14px;font-weight:600;border:none">Schliessen</button>
 </div>
 <script>
-var deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;setTimeout(function(){if(!localStorage.getItem('ib-dismissed')){document.getElementById('ib').style.display='block';}},4000);});
-document.getElementById('ib-yes').addEventListener('click',function(){document.getElementById('ib').style.display='none';if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(r){deferredPrompt=null;if(r.outcome==='accepted')localStorage.setItem('ib-dismissed','1');});}});
-document.getElementById('ib-no').addEventListener('click',function(){document.getElementById('ib').style.display='none';localStorage.setItem('ib-dismissed','1');});
-document.getElementById('ios-close').addEventListener('click',function(){document.getElementById('ios-guide').style.display='none';localStorage.setItem('ib-dismissed','1');});
-var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
-if(isIOS&&!window.navigator.standalone&&!localStorage.getItem('ib-dismissed')){setTimeout(function(){document.getElementById('ios-guide').style.display='block';},4000);}
-if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}
-</script>
-<script>
-
+var CATS=[
+{n:'Essen',i:[['food','\uD83C\uDF7D'],['coffee','\u2615'],['beer','\uD83C\uDF7A'],['wine','\uD83C\uDF77'],['burger','\uD83C\uDF54'],['pizza','\uD83C\uDF55'],['sushi','\uD83C\uDF63'],['wrap','\uD83C\uDF2F'],['cake','\uD83C\uDF70'],['icecream','\uD83C\uDF66'],['tea','\uD83C\uDF75'],['bread','\uD83E\uDD56'],['salad','\uD83E\uDD57'],['noodles','\uD83C\uDF5C'],['taco','\uD83C\uDF2E'],['fries','\uD83C\uDF5F'],['donut','\uD83C\uDF69']]},
+{n:'Transport',i:[['car','\uD83D\uDE97'],['plane','\u2708'],['scooter','\uD83D\uDEF4'],['train','\uD83D\uDE86'],['bus','\uD83D\uDE8C'],['bike','\uD83D\uDEB4'],['taxi','\uD83D\uDE95'],['ship','\uD83D\uDEA2'],['moto','\uD83C\uDFCD'],['truck','\uD83D\uDE9A']]},
+{n:'Shopping',i:[['cart','\uD83D\uDED2'],['bag','\uD83D\uDC5C'],['shoe','\uD83D\uDC5F'],['shirt','\uD83D\uDC55'],['dress','\uD83D\uDC57'],['hat','\uD83D\uDC52'],['glasses','\uD83D\uDC53'],['watch','\u231A'],['ring','\uD83D\uDC8D'],['gift','\uD83C\uDF81'],['market','\uD83C\uDFAA']]},
+{n:'Gesundheit',i:[['pill','\uD83D\uDC8A'],['hospital','\uD83C\uDFE5'],['muscle','\uD83D\uDCAA'],['heart','\u2764'],['spa','\uD83D\uDEC1'],['run','\uD83C\uDFC3'],['swim','\uD83C\uDFCA']]},
+{n:'Freizeit',i:[['fun','\uD83C\uDFAD'],['cinema','\uD83C\uDFAC'],['music','\uD83C\uDFB5'],['game','\uD83C\uDFAE'],['sport','\u26BD'],['book','\uD83D\uDCDA'],['guitar','\uD83C\uDFB8'],['ticket','\uD83C\uDFAB'],['party','\uD83C\uDF89'],['tennis','\uD83C\uDFBE'],['ski','\u26F7'],['dice','\uD83C\uDFB2']]},
+{n:'Reisen',i:[['hotel','\uD83C\uDFE8'],['tent','\u26FA'],['beach','\uD83C\uDFD6'],['mountain','\u26F0'],['luggage','\uD83E\uDDF3'],['camera','\uD83D\uDCF7'],['sun','\u2600'],['snow','\u2744'],['palm','\uD83C\uDF34'],['globe','\uD83C\uDF0D']]},
+{n:'Geld',i:[['cash','\uD83D\uDCB5'],['tax','\uD83C\uDFE6'],['chart','\uD83D\uDCC8'],['laptop','\uD83D\uDCBB'],['phone','\uD83D\uDCF1'],['key','\uD83D\uDD11'],['star','\u2B50'],['fire','\uD83D\uDD25']]},
+{n:'Pflege',i:[['scissors','\u2702'],['nail','\uD83D\uDC85'],['barber','\uD83D\uDC88'],['bath','\uD83D\uDEC1'],['parfum','\uD83D\uDC84']]},
+{n:'Zuhause',i:[['home','\uD83C\uDFE0'],['sofa','\uD83D\uDECB'],['tv','\uD83D\uDCFA'],['plant','\uD83E\uDEB4'],['flower','\uD83C\uDF37'],['clean','\uD83E\uDDF9'],['hammer','\uD83D\uDD28']]},
+{n:'Familie',i:[['baby','\uD83D\uDC76'],['family','\uD83D\uDC68'],['couple','\uD83D\uDC6B'],['heart2','\uD83D\uDC95'],['church','\u26EA'],['pray','\uD83D\uDE4F'],['birthday','\uD83C\uDF82']]}
+];
 var ICON_CATS=[
-{cat:‘Essen’,icons:[[‘food’,’\uD83C\uDF7D’],[‘coffee’,’\u2615’],[‘beer’,’\uD83C\uDF7A’],[‘wine’,’\uD83C\uDF77’],[‘cocktail’,’\uD83C\uDF78’],[‘burger’,’\uD83C\uDF54’],[‘pizza’,’\uD83C\uDF55’],[‘sushi’,’\uD83C\uDF63’],[‘wrap’,’\uD83C\uDF2F’],[‘cake’,’\uD83C\uDF70’],[‘icecream’,’\uD83C\uDF66’],[‘cookie’,’\uD83C\uDF6A’],[‘candy’,’\uD83C\uDF6C’],[‘popcorn’,’\uD83C\uDFF4’],[‘tea’,’\uD83C\uDF75’],[‘juice’,’\uD83E\uDD64’],[‘milk’,’\uD83E\uDD5B’],[‘egg’,’\uD83E\uDD5A’],[‘bread’,’\uD83E\uDD56’],[‘cheese’,’\uD83E\uDDC0’],[‘meat’,’\uD83E\uDD69’],[‘salad’,’\uD83E\uDD57’],[‘noodles’,’\uD83C\uDF5C’],[‘taco’,’\uD83C\uDF2E’],[‘fries’,’\uD83C\uDF5F’],[‘hotdog’,’\uD83C\uDF2D’],[‘pretzel’,’\uD83E\uDD68’],[‘waffle’,’\uD83E\uDDC7’],[‘donut’,’\uD83C\uDF69’],[‘pie’,’\uD83E\uDD67’]]},
-{cat:‘Transport’,icons:[[‘car’,’\uD83D\uDE97’],[‘plane’,’\u2708’],[‘scooter’,’\uD83D\uDEF4’],[‘train’,’\uD83D\uDE86’],[‘bus’,’\uD83D\uDE8C’],[‘bike’,’\uD83D\uDEB4’],[‘taxi’,’\uD83D\uDE95’],[‘ship’,’\uD83D\uDEA2’],[‘heli’,’\uD83D\uDE81’],[‘rocket’,’\uD83D\uDE80’],[‘moto’,’\uD83C\uDFCD’],[‘truck’,’\uD83D\uDE9A’],[‘tram’,’\uD83D\uDE8A’],[‘sub’,’\uD83D\uDE87’],[‘cable’,’\uD83D\uDEA0’],[‘kick’,’\uD83D\uDEF5’]]},
-{cat:‘Shopping’,icons:[[‘cart’,’\uD83D\uDED2’],[‘bag’,’\uD83D\uDC5C’],[‘shoe’,’\uD83D\uDC5F’],[‘shirt’,’\uD83D\uDC55’],[‘dress’,’\uD83D\uDC57’],[‘jeans’,’\uD83D\uDC56’],[‘hat’,’\uD83D\uDC52’],[‘glasses’,’\uD83D\uDC53’],[‘watch’,’\u231A’],[‘ring’,’\uD83D\uDC8D’],[‘diamond’,’\uD83D\uDC8E’],[‘lipstick’,’\uD83D\uDC84’],[‘gift’,’\uD83C\uDF81’],[‘market’,’\uD83C\uDFAA’],[‘tag’,’\uD83C\uDFF7’],[‘box’,’\uD83D\uDCE6’]]},
-{cat:‘Gesundheit’,icons:[[‘pill’,’\uD83D\uDC8A’],[‘hospital’,’\uD83C\uDFE5’],[‘tooth’,’\uD83E\uDDB7’],[‘muscle’,’\uD83D\uDCAA’],[‘heart’,’\u2764’],[‘bandage’,’\uD83E\uDE79’],[‘syringe’,’\uD83D\uDC89’],[‘spa’,’\uD83D\uDEC1’],[‘yoga’,’\uD83E\uDDD8’],[‘run’,’\uD83C\uDFC3’],[‘swim’,’\uD83C\uDFCA’],[‘gym’,’\uD83D\uDCAA’]]},
-{cat:‘Freizeit’,icons:[[‘fun’,’\uD83C\uDFAD’],[‘cinema’,’\uD83C\uDFAC’],[‘music’,’\uD83C\uDFB5’],[‘game’,’\uD83C\uDFAE’],[‘sport’,’\u26BD’],[‘book’,’\uD83D\uDCDA’],[‘art’,’\uD83C\uDFA8’],[‘photo’,’\uD83D\uDCF8’],[‘guitar’,’\uD83C\uDFB8’],[‘piano’,’\uD83C\uDFB9’],[‘ticket’,’\uD83C\uDFAB’],[‘party’,’\uD83C\uDF89’],[‘tennis’,’\uD83C\uDFBE’],[‘ski’,’\u26F7’],[‘surf’,’\uD83C\uDFC4’],[‘golf’,’\u26F3’],[‘bowl’,’\uD83C\uDFB3’],[‘chess’,’\u265F’],[‘dice’,’\uD83C\uDFB2’],[‘bike2’,’\uD83D\uDEB5’]]},
-{cat:‘Reisen’,icons:[[‘hotel’,’\uD83C\uDFE8’],[‘tent’,’\u26FA’],[‘beach’,’\uD83C\uDFD6’],[‘mountain’,’\u26F0’],[‘map’,’\uD83D\uDDFA’],[‘compass’,’\uD83E\uDDED’],[‘luggage’,’\uD83E\uDDF3’],[‘camera’,’\uD83D\uDCF7’],[‘sun’,’\u2600’],[‘snow’,’\u2744’],[‘palm’,’\uD83C\uDF34’],[‘globe’,’\uD83C\uDF0D’],[‘island’,’\uD83C\uDFDD’],[‘cactus’,’\uD83C\uDF35’]]},
-{cat:‘Geld’,icons:[[‘cash’,’\uD83D\uDCB5’],[‘tax’,’\uD83C\uDFE6’],[‘chart’,’\uD83D\uDCC8’],[‘laptop’,’\uD83D\uDCBB’],[‘phone’,’\uD83D\uDCF1’],[‘mail’,’\uD83D\uDCE7’],[‘office’,’\uD83C\uDFE2’],[‘key’,’\uD83D\uDD11’],[‘tools’,’\uD83D\uDD27’],[‘light’,’\uD83D\uDCA1’],[‘target’,’\uD83C\uDFAF’],[‘trophy’,’\uD83C\uDFC6’],[‘star’,’\u2B50’],[‘fire’,’\uD83D\uDD25’]]},
-{cat:‘Pflege’,icons:[[‘scissors’,’\u2702’],[‘nail’,’\uD83D\uDC85’],[‘barber’,’\uD83D\uDC88’],[‘beauty’,’\uD83E\uDDF4’],[‘brush’,’\uD83E\uDDE4’],[‘bath’,’\uD83D\uDEC1’],[‘parfum’,’\uD83D\uDC84’],[‘soap’,’\uD83E\uDDF4’],[‘mirror’,’\uD83E\uDDD6’]]},
-{cat:‘Zuhause’,icons:[[‘home’,’\uD83C\uDFE0’],[‘sofa’,’\uD83D\uDECB’],[‘bed’,’\uD83D\uDECF’],[‘tv’,’\uD83D\uDCFA’],[‘plant’,’\uD83E\uDEB4’],[‘flower’,’\uD83C\uDF37’],[‘clean’,’\uD83E\uDDF9’],[‘hammer’,’\uD83D\uDD28’],[‘lamp’,’\uD83D\uDCA1’],[‘paint’,’\uD83D\uDD8C’]]},
-{cat:‘Familie’,icons:[[‘baby’,’\uD83D\uDC76’],[‘child’,’\uD83D\uDC67’],[‘family’,’\uD83D\uDC68’],[‘couple’,’\uD83D\uDC6B’],[‘party2’,’\uD83E\uDD73’],[‘gift2’,’\uD83C\uDF81’],[‘heart2’,’\uD83D\uDC95’],[‘church’,’\u26EA’],[‘pray’,’\uD83D\uDE4F’],[‘handshake’,’\uD83E\uDD1D’],[‘hug’,’\uD83E\uDD17’],[‘birthday’,’\uD83C\uDF82’]]}
+  {cat:'Essen',icons:[['food','\uD83C\uDF7D'],['coffee','\u2615'],['beer','\uD83C\uDF7A'],['wine','\uD83C\uDF77'],['cocktail','\uD83C\uDF78'],['burger','\uD83C\uDF54'],['pizza','\uD83C\uDF55'],['sushi','\uD83C\uDF63'],['wrap','\uD83C\uDF2F'],['cake','\uD83C\uDF70'],['icecream','\uD83C\uDF66'],['cookie','\uD83C\uDF6A'],['candy','\uD83C\uDF6C'],['popcorn','\uD83C\uDFF4'],['tea','\uD83C\uDF75'],['juice','\uD83E\uDD64'],['milk','\uD83E\uDD5B'],['egg','\uD83E\uDD5A'],['bread','\uD83E\uDD56'],['cheese','\uD83E\uDDC0'],['meat','\uD83E\uDD69'],['salad','\uD83E\uDD57'],['noodles','\uD83C\uDF5C'],['taco','\uD83C\uDF2E'],['fries','\uD83C\uDF5F'],['hotdog','\uD83C\uDF2D'],['pretzel','\uD83E\uDD68'],['waffle','\uD83E\uDDC7'],['donut','\uD83C\uDF69'],['pie','\uD83E\uDD67']]},
+  {cat:'Transport',icons:[['car','\uD83D\uDE97'],['plane','\u2708'],['scooter','\uD83D\uDEF4'],['train','\uD83D\uDE86'],['bus','\uD83D\uDE8C'],['bike','\uD83D\uDEB4'],['taxi','\uD83D\uDE95'],['ship','\uD83D\uDEA2'],['heli','\uD83D\uDE81'],['rocket','\uD83D\uDE80'],['moto','\uD83C\uDFCD'],['truck','\uD83D\uDE9A'],['tram','\uD83D\uDE8A'],['sub','\uD83D\uDE87'],['cable','\uD83D\uDEA0'],['kick','\uD83D\uDEF5']]},
+  {cat:'Shopping',icons:[['cart','\uD83D\uDED2'],['bag','\uD83D\uDC5C'],['shoe','\uD83D\uDC5F'],['shirt','\uD83D\uDC55'],['dress','\uD83D\uDC57'],['jeans','\uD83D\uDC56'],['hat','\uD83D\uDC52'],['glasses','\uD83D\uDC53'],['watch','\u231A'],['ring','\uD83D\uDC8D'],['diamond','\uD83D\uDC8E'],['lipstick','\uD83D\uDC84'],['gift','\uD83C\uDF81'],['market','\uD83C\uDFAA'],['tag','\uD83C\uDFF7'],['box','\uD83D\uDCE6']]},
+  {cat:'Gesundheit',icons:[['pill','\uD83D\uDC8A'],['hospital','\uD83C\uDFE5'],['tooth','\uD83E\uDDB7'],['muscle','\uD83D\uDCAA'],['heart','\u2764'],['bandage','\uD83E\uDE79'],['syringe','\uD83D\uDC89'],['spa','\uD83D\uDEC1'],['yoga','\uD83E\uDDD8'],['run','\uD83C\uDFC3'],['swim','\uD83C\uDFCA'],['gym','\uD83D\uDCAA']]},
+  {cat:'Freizeit',icons:[['fun','\uD83C\uDFAD'],['cinema','\uD83C\uDFAC'],['music','\uD83C\uDFB5'],['game','\uD83C\uDFAE'],['sport','\u26BD'],['book','\uD83D\uDCDA'],['art','\uD83C\uDFA8'],['photo','\uD83D\uDCF8'],['guitar','\uD83C\uDFB8'],['piano','\uD83C\uDFB9'],['ticket','\uD83C\uDFAB'],['party','\uD83C\uDF89'],['tennis','\uD83C\uDFBE'],['ski','\u26F7'],['surf','\uD83C\uDFC4'],['golf','\u26F3'],['bowl','\uD83C\uDFB3'],['chess','\u265F'],['dice','\uD83C\uDFB2'],['bike2','\uD83D\uDEB5']]},
+  {cat:'Reisen',icons:[['hotel','\uD83C\uDFE8'],['tent','\u26FA'],['beach','\uD83C\uDFD6'],['mountain','\u26F0'],['map','\uD83D\uDDFA'],['compass','\uD83E\uDDED'],['luggage','\uD83E\uDDF3'],['camera','\uD83D\uDCF7'],['sun','\u2600'],['snow','\u2744'],['palm','\uD83C\uDF34'],['globe','\uD83C\uDF0D'],['island','\uD83C\uDFDD'],['cactus','\uD83C\uDF35']]},
+  {cat:'Geld',icons:[['cash','\uD83D\uDCB5'],['tax','\uD83C\uDFE6'],['chart','\uD83D\uDCC8'],['laptop','\uD83D\uDCBB'],['phone','\uD83D\uDCF1'],['mail','\uD83D\uDCE7'],['office','\uD83C\uDFE2'],['key','\uD83D\uDD11'],['tools','\uD83D\uDD27'],['light','\uD83D\uDCA1'],['target','\uD83C\uDFAF'],['trophy','\uD83C\uDFC6'],['star','\u2B50'],['fire','\uD83D\uDD25']]},
+  {cat:'Pflege',icons:[['scissors','\u2702'],['nail','\uD83D\uDC85'],['barber','\uD83D\uDC88'],['beauty','\uD83E\uDDF4'],['brush','\uD83E\uDDE4'],['bath','\uD83D\uDEC1'],['parfum','\uD83D\uDC84'],['soap','\uD83E\uDDF4'],['mirror','\uD83E\uDDD6']]},
+  {cat:'Zuhause',icons:[['home','\uD83C\uDFE0'],['sofa','\uD83D\uDECB'],['bed','\uD83D\uDECF'],['tv','\uD83D\uDCFA'],['plant','\uD83E\uDEB4'],['flower','\uD83C\uDF37'],['clean','\uD83E\uDDF9'],['hammer','\uD83D\uDD28'],['lamp','\uD83D\uDCA1'],['paint','\uD83D\uDD8C']]},
+  {cat:'Familie',icons:[['baby','\uD83D\uDC76'],['child','\uD83D\uDC67'],['family','\uD83D\uDC68'],['couple','\uD83D\uDC6B'],['party2','\uD83E\uDD73'],['gift2','\uD83C\uDF81'],['heart2','\uD83D\uDC95'],['church','\u26EA'],['pray','\uD83D\uDE4F'],['handshake','\uD83E\uDD1D'],['hug','\uD83E\uDD17'],['birthday','\uD83C\uDF82']]}
 ];
 var ICONS=[];
 ICON_CATS.forEach(function(cat){cat.icons.forEach(function(ic){ICONS.push(ic);});});
-function gi(k){for(var i=0;i<ICONS.length;i++){if(ICONS[i][0]===k)return ICONS[i][1];}return ‘\uD83D\uDCB6’;}
+function gi(k){for(var i=0;i<ICONS.length;i++){if(ICONS[i][0]===k)return ICONS[i][1];}return '\uD83D\uDCB6';}
 
 var RULES=[[‘uber’,‘car’],[‘bolt’,‘scooter’],[‘taxi’,‘car’],[‘bahn’,‘car’],[‘bus’,‘car’],[‘flug’,‘plane’],[‘ticket’,‘ticket’],[‘cafe’,‘coffee’],[‘coffee’,‘coffee’],[‘kaffee’,‘coffee’],[‘restaurant’,‘food’],[‘essen’,‘food’],[‘burger’,‘food’],[‘pizza’,‘food’],[‘sushi’,‘food’],[‘mcdonalds’,‘food’],[‘lieferando’,‘food’],[‘rewe’,‘cart’],[‘edeka’,‘cart’],[‘aldi’,‘cart’],[‘lidl’,‘cart’],[‘supermarkt’,‘cart’],[‘dm’,‘cart’],[‘rossmann’,‘cart’],[‘amazon’,‘cart’],[‘friseur’,‘scissors’],[‘barbershop’,‘barber’],[‘nail’,‘nail’],[‘gym’,‘gym’],[‘fitness’,‘gym’],[‘sport’,‘sport’],[‘kino’,‘cinema’],[‘netflix’,‘phone’],[‘spotify’,‘music’],[‘hotel’,‘hotel’],[‘airbnb’,‘hotel’],[‘apotheke’,‘pill’],[‘arzt’,‘pill’],[‘bargeld’,‘cash’],[‘atm’,‘cash’],[‘bier’,‘beer’],[‘bar’,‘beer’],[‘drinks’,‘beer’],[‘wein’,‘beer’],[‘buch’,‘book’],[‘geschenk’,‘gift’],[‘kirche’,‘gift’],[‘spende’,‘gift’],[‘museum’,‘fun’],[‘konzert’,‘music’],[‘theater’,‘fun’]];
 function autoEmoji(l){var s=l.toLowerCase();for(var i=0;i<RULES.length;i++){if(s.indexOf(RULES[i][0])!==-1)return RULES[i][1];}return null;}
@@ -774,14 +760,27 @@ g(‘btnWb’).addEventListener(‘click’,function(){openBudget(‘week’);})
 g(‘btnMb’).addEventListener(‘click’,function(){openBudget(‘month’);});
 g(‘btnReset’).addEventListener(‘click’,openReset);
 g(‘btnNewTrip’).addEventListener(‘click’,openNewTrip);
-var bng=g(‘btnNewGroup’);if(bng)bng.addEventListener(‘click’,openNewGroup);
+g(‘btnNewGroup’).addEventListener(‘click’,openNewGroup);
 g(‘m-close’).addEventListener(‘click’,closeModal);
 g(‘ov’).addEventListener(‘click’,function(ev){if(ev.target===this)closeModal();});
 draw();
 
+var deferredPrompt=null;
+window.addEventListener(‘beforeinstallprompt’,function(e){e.preventDefault();deferredPrompt=e;setTimeout(function(){if(!localStorage.getItem(‘ib-dismissed’))g(‘ib’).style.display=‘block’;},5000);});
+g(‘ib-yes’).addEventListener(‘click’,function(){g(‘ib’).style.display=‘none’;if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(r){deferredPrompt=null;if(r.outcome===‘accepted’)localStorage.setItem(‘ib-dismissed’,‘1’);});}});
+g(‘ib-no’).addEventListener(‘click’,function(){g(‘ib’).style.display=‘none’;localStorage.setItem(‘ib-dismissed’,‘1’);});
+g(‘ios-close’).addEventListener(‘click’,function(){g(‘ios-guide’).style.display=‘none’;localStorage.setItem(‘ib-dismissed’,‘1’);});
+var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+if(isIOS&&!window.navigator.standalone&&!localStorage.getItem(‘ib-dismissed’)){setTimeout(function(){g(‘ios-guide’).style.display=‘block’;},5000);}
+if(‘serviceWorker’ in navigator){window.addEventListener(‘load’,function(){navigator.serviceWorker.register(’/sw.js’).catch(function(){});});}
+draw();
 </script>
+
 </body>
 </html>
+
+
+
 
 
 
