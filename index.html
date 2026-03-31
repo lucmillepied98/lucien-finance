@@ -12,353 +12,130 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <style>
-/* ... (dein CSS bleibt unverändert, nur die Quotes unten) ... */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:430px;margin:0 auto;min-height:100vh}
 button{cursor:pointer;font-family:inherit;border:none;outline:none;transition:opacity .15s}
 button:active{opacity:.6}
 input,textarea{font-family:inherit;outline:none;-webkit-appearance:none}
-/* ... alle weiteren Klassen so wie vorher, nur mit normalen ' ... */
+.page{display:none}.page.on{display:block}
+.tabs{display:flex;gap:5px;padding:0 14px 12px;overflow-x:auto}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:9px 14px;border-radius:11px;font-size:13px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.08);font-weight:500}
+.tab.on{background:#2563EB;color:#fff;font-weight:700;border-color:transparent}
+.card{background:#111;border-radius:16px;padding:16px;margin-bottom:10px;border:1px solid rgba(255,255,255,.08)}
+.er{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.er:last-child{border-bottom:none}
+.ei{width:40px;height:40px;min-width:40px;border-radius:11px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:18px}
+.en{flex:1;min-width:0}
+.enm{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ent{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
+.ea{font-size:14px;font-weight:700;white-space:nowrap}
+.edel{background:rgba(255,255,255,.08);border-radius:8px;width:26px;min-width:26px;height:26px;color:rgba(255,255,255,.35);font-size:15px;display:flex;align-items:center;justify-content:center}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:12px}
+.st{background:rgba(255,255,255,.05);border-radius:10px;padding:10px 6px;text-align:center}
+.stl{font-size:9px;color:rgba(255,255,255,.35);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.stv{font-size:13px;font-weight:700}
+.pbar{background:#1e1e1e;border-radius:100px;height:5px;margin:10px 0}
+.pbfill{height:5px;border-radius:100px;transition:width .5s}
+.sh{display:flex;justify-content:space-between;align-items:center;margin:14px 0 8px}
+.shl{font-size:11px;color:rgba(255,255,255,.35);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.shr{font-size:12px;color:#60A5FA;font-weight:700}
+.ov{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.87);z-index:9999;display:none;align-items:flex-end;justify-content:center}
+.ov.on{display:flex}
+.sheet{background:#111;border-radius:20px 20px 0 0;padding:0 20px 48px;width:100%;max-width:430px;max-height:88vh;overflow-y:auto;border-top:1px solid rgba(255,255,255,.1)}
+.hdl{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);margin:14px auto 20px}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.mtitle{font-size:17px;font-weight:700}
+.xbtn{background:rgba(255,255,255,.1);border-radius:50%;width:32px;height:32px;color:rgba(255,255,255,.5);font-size:18px;display:flex;align-items:center;justify-content:center}
+.inp{width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px 14px;color:#fff;font-size:15px;margin-bottom:8px;display:block}
+.inp::placeholder{color:rgba(255,255,255,.2)}
+.r2{display:flex;gap:8px;margin-top:12px}
+.btn-gray{flex:1;padding:13px;border-radius:12px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);font-size:14px;font-weight:500}
+.btn-blue{flex:1;padding:13px;border-radius:12px;background:#2563EB;color:#fff;font-size:14px;font-weight:700}
+.btn-green{flex:1;padding:13px;border-radius:12px;background:#10B981;color:#fff;font-size:14px;font-weight:700}
+.btn-red{flex:1;padding:13px;border-radius:12px;background:#EF4444;color:#fff;font-size:14px;font-weight:700}
+.btn-full{width:100%;padding:13px;border-radius:12px;background:#2563EB;color:#fff;font-size:15px;font-weight:700;margin-top:4px}
+.igrid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.ibtn{width:40px;height:40px;border-radius:10px;background:#1a1a1a;border:2px solid transparent;font-size:19px;display:flex;align-items:center;justify-content:center}
+.presets{display:flex;gap:6px;margin:8px 0 16px}
+.preset{flex:1;padding:10px;border-radius:10px;background:#1a1a1a;border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.35);font-size:13px;font-weight:600}
+.preset.on{background:rgba(59,130,246,.15);border-color:#2563EB;color:#60A5FA}
+.badge{display:inline-block;border-radius:20px;padding:5px 14px;font-size:13px;font-weight:700}
+.ins-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.ins-row:last-child{border-bottom:none}
+.mood-bar{display:flex;justify-content:space-between;gap:6px;margin:14px 0}
+.mood-btn{flex:1;padding:10px 2px;border-radius:12px;background:#1a1a1a;border:2px solid transparent;text-align:center}
+.mood-btn.on{border-color:#2563EB;background:rgba(59,130,246,.15)}
+.sel-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer}
+.sel-row:last-child{border-bottom:none}
+.sel-chk{width:22px;height:22px;min-width:22px;border-radius:6px;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.sel-chk.on{background:#2563EB;border-color:#2563EB;color:#fff}
 </style>
 </head>
 <body>
-<!-- ... dein HTML bleibt komplett so, nur die Events unten im JS ordentlich gemacht ... -->
+<div style="padding:52px 14px 12px;display:flex;justify-content:space-between;align-items:center">
+  <div>
+    <div style="font-size:22px;font-weight:800;letter-spacing:-.5px">Koinonia</div>
+    <div id="sub" style="color:rgba(255,255,255,.4);font-size:11px;margin-top:2px"></div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button id="btnShare" style="background:rgba(255,255,255,.08);border-radius:12px;padding:9px 13px;color:rgba(255,255,255,.6);font-size:15px;border:1px solid rgba(255,255,255,.08)">&#128228;</button>
+    <button id="btnAdd" style="background:#2563EB;border-radius:12px;padding:9px 22px;color:#fff;font-size:18px;font-weight:700">+</button>
+  </div>
+</div>
+<div class="tabs">
+  <button class="tab on" id="t-home">Home</button>
+  <button class="tab" id="t-forecast">Forecast</button>
+  <button class="tab" id="t-all">Alle</button>
+  <button class="tab" id="t-split">Split</button>
+  <button class="tab" id="t-trips">Trips</button>
+</div>
+<!-- HOME -->
+<div id="home" class="page on" style="padding:0 14px 80px">
+  <div class="card">
+    <div style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Diese Woche</div>
+    <div id="h-ws" style="font-size:36px;font-weight:800;letter-spacing:-1.5px;line-height:1;color:#10B981">&#8364; 0</div>
+    <div id="h-of" style="font-size:12px;color:rgba(255,255,255,.35);margin-top:5px">von &#8364; 400</div>
+    <div class="pbar"><div id="h-bar" class="pbfill" style="width:0%;background:#10B981"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px">
+      <span id="h-st" style="color:#10B981">Im Budget</span>
+      <span id="h-lf" style="color:rgba(255,255,255,.35)">&#8364; 400 uebrig</span>
+    </div>
+    <div class="g3">
+      <div class="st"><div class="stl">Heute</div><div id="h-ts" class="stv">&#8364; 0</div></div>
+      <div class="st"><div class="stl">Woche</div><div id="h-ws2" class="stv">&#8364; 0</div></div>
+      <div class="st"><div class="stl">Monat</div><div id="h-ms" class="stv" style="color:#60A5FA">&#8364; 0</div></div>
+    </div>
+    <button id="btnWb" style="margin-top:12px;background:rgba(255,255,255,.07);border-radius:8px;padding:6px 12px;color:rgba(255,255,255,.35);font-size:11px">Budget aendern</button>
+  </div>
+  <div id="install-btn-wrap" style="display:none;margin-bottom:10px">
+    <button id="btnInstall" style="width:100%;padding:12px;border-radius:12px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:#60A5FA;font-size:13px;font-weight:600">&#128247; App zum Homescreen hinzufuegen</button>
+  </div>
+  <div class="card" id="ins-card" style="display:none">
+    <div style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Einblicke</div>
+    <div id="ins-body"></div>
+  </div>
+  <div class="sh"><div class="shl">Zuletzt</div><button id="btnAllLink" style="background:none;color:#60A5FA;font-size:12px;font-weight:600">Alle &rarr;</button></div>
+  <div class="card" id="h-rec" style="padding:8px 14px"></div>
+</div>
+<!-- FORECAST -->
+<div id="forecast" class="page" style="padding:0 14px 80px">
+  <div style="text-align:center;padding:18px 0 20px">
+    <div style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">Prognose Monatsende</div>
+    <div id="fc-big" style="font-size:46px;font-weight:800;letter-spacing:-2px;line-height:1;color:#F59E0B">&#8364; 0</div>
+    <div id="fc-bud" style="font-size:12px;color:rgba(255,255,255,.35);margin-top:6px">Budget: &#8364; 1500</div>
+    <div id="fc-badge" class="badge" style="margin-top:10px;background:rgba(16,185,129,.12);color:#10B981">Gut</div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+      <span id="fc-days" style="font-size:12px;color:rgba(255,255,255,.35)">Tag 0/31</span>
+      <span id="fc-pct" style="font-size:12px;color:#60A5FA">0%</span>
+    </div>
+    <div class="pbar"><div id="fc-bar" class="pbfill
 
-<script>
-var ICON_CATS=[
-  {cat:'Essen',icons:[['food','🍽'],['coffee','☕'],['beer','🍺'],['wine','🍷'],['cocktail','🍸'],['burger','🍔'],['pizza','🍕'],['sushi','🍣'],['wrap','🌯'],['cake','🍰'],['icecream','🍦'],['cookie','🍪'],['candy','🍬'],['popcorn','🏴'],['tea','🍵'],['juice','🧤'],['milk','🍼'],['egg','🥚'],['bread','🥖'],['cheese','🧀'],['meat','🥩'],['salad','🥗'],['noodles','🍜'],['taco','🌮'],['fries','🍟'],['hotdog','🌭'],['pretzel','🥨'],['waffle','🧇'],['donut','🍩'],['pie','🥧']]},
-  {cat:'Transport',icons:[['car','🚗'],['plane','✈'],['scooter','🛴'],['train','🚆'],['bus','🚌'],['bike','🚴'],['taxi','🚕'],['ship','🚢'],['heli','🚁'],['rocket','🚀'],['moto','🛍'],['truck','🚚'],['tram','🚊'],['sub','🚇'],['cable','🚠'],['kick','🛵']]},
-  {cat:'Shopping',icons:[['cart','🛒'],['bag','👜'],['shoe','👟'],['shirt','👕'],['dress','👗'],['jeans','👖'],['hat','👒'],['glasses','👓'],['watch','⌚'],['ring','💍'],['diamond','💎'],['lipstick','💄'],['gift','🎁'],['market','🎪'],['tag','🏷'],['box','📦']]},
-  {cat:'Gesundheit',icons:[['pill','💊'],['hospital','🏥'],['tooth','🦷'],['muscle','💪'],['heart','❤'],['bandage','🩹'],['syringe','💉'],['spa','🛁'],['yoga','🧘'],['run','🏃'],['swim','🏊'],['gym','💪']]},
-  {cat:'Freizeit',icons:[['fun','🎭'],['cinema','🎬'],['music','🎵'],['game','🎮'],['sport','⚽'],['book','📚'],['art','🎨'],['photo','📸'],['guitar','🎸'],['piano','🎹'],['ticket','🎫'],['party','🎉'],['tennis','🎾'],['ski','⛷'],['surf','🏄'],['golf','⛳'],['bowl','🎳'],['chess','♟'],['dice','🎲'],['bike2','🚵']]},
-  {cat:'Reisen',icons:[['hotel','🏨'],['tent','⛺'],['beach','🏖'],['mountain','⛰'],['map','🗺'],['compass','🧭'],['luggage','🧳'],['camera','📷'],['sun','☀'],['snow','❄'],['palm','🌴'],['globe','🌍'],['island','🏝'],['cactus','🌵']]},
-  {cat:'Geld',icons:[['cash','💵'],['tax','🏦'],['chart','📈'],['laptop','💻'],['phone','📱'],['mail','📧'],['office','🏢'],['key','🔑'],['tools','🔧'],['light','💡'],['target','🎯'],['trophy','🏆'],['star','⭐'],['fire','🔥']]},
-  {cat:'Pflege',icons:[['scissors','✂'],['nail','💅'],['barber','💈'],['beauty','🧴'],['brush','🪄'],['bath','🛁'],['parfum','💄'],['soap','🧼'],['mirror','🪞']]},
-  {cat:'Zuhause',icons:[['home','🏠'],['sofa','🛋'],['bed','🛏'],['tv','📺'],['plant','🪴'],['flower','🌷'],['clean','🧹'],['hammer','🔨'],['lamp','💡'],['paint','🖌']]},
-  {cat:'Familie',icons:[['baby','👶'],['child','👧'],['family','👨'],['couple','👫'],['party2','🥳'],['gift2','🎁'],['heart2','💕'],['church','⛪'],['pray','🙏'],['handshake','🤝'],['hug','🤗'],['birthday','🎂']]}
-];
-var ICONS=[];
-ICON_CATS.forEach(function(cat){cat.icons.forEach(function(ic){ICONS.push(ic);});});
 
-function gi(k){
-  for(var i=0;i<ICONS.length;i++){
-    if(ICONS[i][0]===k)return ICONS[i][1];
-  }
-  return '💶';
-}
+  
+  
 
-var RULES=[
-  ['uber','car'],['bolt','scooter'],['taxi','car'],['bahn','car'],['bus','car'],
-  ['flug','plane'],['ticket','ticket'],['cafe','coffee'],['coffee','coffee'],['kaffee','coffee'],
-  ['restaurant','food'],['essen','food'],['burger','food'],['pizza','food'],['sushi','food'],
-  ['mcdonalds','food'],['lieferando','food'],['rewe','cart'],['edeka','cart'],['aldi','cart'],
-  ['lidl','cart'],['supermarkt','cart'],['dm','cart'],['rossmann','cart'],['amazon','cart'],
-  ['friseur','scissors'],['barbershop','barber'],['nail','nail'],['gym','gym'],['fitness','gym'],
-  ['sport','sport'],['kino','cinema'],['netflix','phone'],['spotify','music'],['hotel','hotel'],
-  ['airbnb','hotel'],['apotheke','pill'],['arzt','pill'],['bargeld','cash'],['atm','cash'],
-  ['bier','beer'],['bar','beer'],['drinks','beer'],['wein','beer'],['buch','book'],
-  ['geschenk','gift'],['kirche','gift'],['spende','gift'],['museum','fun'],['konzert','music'],
-  ['theater','fun']
-];
-
-function autoEmoji(l){
-  var s=l.toLowerCase();
-  for(var i=0;i<RULES.length;i++){
-    if(s.indexOf(RULES[i][0])!==-1)return RULES[i][1];
-  }
-  return null;
-}
-
-function lsGet(k,fb){
-  try{var v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;}
-}
-function lsSet(k,v){
-  try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}
-}
-
-var EXP=lsGet('kn11-exp',[]);
-var WB=lsGet('kn11-wb',400);
-var MB=lsGet('kn11-mb',1500);
-var TRIPS=lsGet('kn11-trips',[]);
-var GROUPS=lsGet('kn11-groups',[]);
-var SICON='cart';
-var SP_N=2;
-var SP_PEOPLE=[];
-var SELECTED={};
-
-function fmt(n){
-  return '€ '+Number(n).toLocaleString('de-DE',{
-    minimumFractionDigits:0,
-    maximumFractionDigits:2
-  });
-}
-
-function today(){
-  return new Date().toISOString().split('T')[0];
-}
-function isToday(d){
-  return new Date(d).toDateString()===new Date().toDateString();
-}
-function isWeek(d){
-  var now=new Date(),
-      dt=new Date(d),
-      day=now.getDay()||7;
-
-  var mon=new Date(now);
-  mon.setDate(now.getDate()-day+1);
-  mon.setHours(0,0,0,0);
-
-  var sun=new Date(mon);
-  sun.setDate(mon.getDate()+6);
-  sun.setHours(23,59,59,999);
-
-  return dt>=mon && dt<=sun;
-}
-function isMonth(d){
-  var n=new Date(),
-      dt=new Date(d);
-  return dt.getMonth()===n.getMonth() && dt.getFullYear()===n.getFullYear();
-}
-function scCol(p){
-  return p<60?'#10B981':p<85?'#F59E0B':'#EF4444';
-}
-function g(id){
-  return document.getElementById(id);
-}
-function el(tag){
-  return document.createElement(tag);
-}
-
-function calcHome(){
-  var ws=0,ts=0,ms=0;
-  EXP.forEach(function(e){
-    if(isWeek(e.date))ws+=e.amount;
-    if(isToday(e.date))ts+=e.amount;
-    if(isMonth(e.date))ms+=e.amount;
-  });
-  return{
-    ws:ws,ts:ts,ms:ms,
-    wp:Math.min((ws/WB)*100,100)
-  };
-}
-
-function calcFc(){
-  var now=new Date(),
-      dom=now.getDate(),
-      dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
-
-  var ms=EXP.filter(function(e){return isMonth(e.date);})
-            .reduce(function(s,e){return s+e.amount;},0);
-
-  var dr=dom>0?ms/dom:0,
-      fore=dr*dim,
-      bl=MB-ms,
-      dl=dim-dom;
-
-  return{
-    ms:ms,fore:fore,diff:fore-MB,
-    dom:dom,dim:dim,dr:dr,bl:bl,dleft:dl>0?bl/dl:0
-  };
-}
-
-function makeRow(e){
-  var row=el('div');
-  row.className='er';
-
-  var ic=el('div');
-  ic.className='ei';
-  ic.textContent=gi(e.icon);
-
-  var inf=el('div');
-  inf.className='en';
-
-  var nm=el('div');
-  nm.className='enm';
-  nm.textContent=e.label;
-
-  var nt=el('div');
-  nt.className='ent';
-  var moodMap={great:' 😄',good:' 🙂',ok:' 😐',meh:' 😕',bad:' 😟'};
-  nt.textContent=(e.note||new Date(e.date).toLocaleDateString('de-DE',{
-    day:'numeric',
-    month:'short'
-  }))+(e.mood?moodMap[e.mood]||'':'');
-
-  inf.appendChild(nm);
-  inf.appendChild(nt);
-
-  var am=el('div');
-  am.className='ea';
-  am.textContent=fmt(e.amount);
-
-  var sp=el('button');
-  sp.style.cssText='background:rgba(59,130,246,.15);border-radius:8px;width:26px;min-width:26px;height:26px;color:#60A5FA;font-size:11px;display:flex;align-items:center;justify-content:center;margin-left:2px';
-  sp.textContent='%';
-  (function(exp){
-    sp.addEventListener('click',function(ev){
-      ev.stopPropagation();
-      g('sp-amt').value=exp.amount;
-      g('sp-desc').value=exp.label;
-      SP_N=2;
-      SP_PEOPLE=[{name:'',amount:0,locked:false},{name:'',amount:0,locked:false}];
-      buildNamesArea();
-      showTab('split');
-    });
-  })(e);
-
-  var dl=el('button');
-  dl.className='edel';
-  dl.textContent='×';
-  (function(eid){
-    dl.addEventListener('click',function(ev){
-      ev.stopPropagation();
-      EXP=EXP.filter(function(x){return x.id!==eid;});
-      lsSet('kn11-exp',EXP);
-      draw();
-    });
-  })(e.id);
-
-  row.appendChild(ic);
-  row.appendChild(inf);
-  row.appendChild(am);
-  row.appendChild(sp);
-  row.appendChild(dl);
-
-  return row;
-}
-
-function draw(){
-  var st=calcHome();
-  var sc=scCol(st.wp);
-
-  g('sub').textContent=new Date().toLocaleDateString('de-DE',{
-    weekday:'long',day:'numeric',month:'long',year:'numeric'
-  });
-
-  g('h-ws').textContent=fmt(st.ws);
-  g('h-ws').style.color=sc;
-
-  g('h-of').textContent='von '+fmt(WB);
-
-  g('h-bar').style.width=st.wp+'%';
-  g('h-bar').style.background=sc;
-
-  g('h-st').textContent=st.wp<60?'Im Budget':st.wp<85?'Aufpassen':'Fast voll';
-  g('h-st').style.color=sc;
-
-  var lft=WB-st.ws;
-  g('h-lf').textContent=lft>=0?fmt(lft)+' uebrig':fmt(Math.abs(lft))+' ueberzogen';
-
-  g('h-ts').textContent=fmt(st.ts);
-  g('h-ws2').textContent=fmt(st.ws);
-  g('h-ws2').style.color=sc;
-  g('h-ms').textContent=fmt(st.ms);
-
-  drawInsights(st);
-
-  var rec=g('h-rec');
-  rec.innerHTML='';
-  if(EXP.length===0){
-    var em=el('div');
-    em.style.cssText='text-align:center;padding:18px 0;color:rgba(255,255,255,.3);font-size:13px';
-    em.textContent='Noch keine Ausgaben';
-    rec.appendChild(em);
-  }else{
-    EXP.slice(0,6).forEach(function(e){
-      rec.appendChild(makeRow(e));
-    });
-  }
-
-  var fc=calcFc();
-  var fcCol=fc.diff>20?'#EF4444':fc.diff>-50?'#F59E0B':'#10B981';
-
-  g('fc-big').textContent=fmt(fc.fore);
-  g('fc-big').style.color=fcCol;
-
-  g('fc-bud').textContent='Budget: '+fmt(MB);
-
-  var bdg=g('fc-badge');
-  if(fc.diff>20){
-    bdg.textContent='+'+fmt(fc.diff)+' ueber Budget';
-    bdg.style.color='#EF4444';
-    bdg.style.background='rgba(239,68,68,.12)';
-  }else if(fc.diff>-50){
-    bdg.textContent='Knapp im Budget';
-    bdg.style.color='#F59E0B';
-    bdg.style.background='rgba(245,158,11,.12)';
-  }else{
-    bdg.textContent='Gut - '+fmt(Math.abs(fc.diff))+' Spielraum';
-    bdg.style.color='#10B981';
-    bdg.style.background='rgba(16,185,129,.12)';
-  }
-
-  g('fc-days').textContent='Tag '+fc.dom+' / '+fc.dim;
-  g('fc-pct').textContent=Math.round((fc.ms/MB)*100)+'% verbraucht';
-  g('fc-bar').style.width=Math.min((fc.ms/MB)*100,100)+'%';
-
-  g('fc-sp').textContent=fmt(fc.ms);
-  g('fc-dr').textContent=fmt(fc.dr);
-  g('fc-bl').textContent=fmt(Math.max(fc.bl,0));
-  g('fc-bl').style.color=fc.bl>0?'#10B981':'#EF4444';
-  g('fc-dl').textContent=fmt(Math.max(fc.dleft,0));
-  g('fc-dl').style.color=fc.dleft>30?'#10B981':fc.dleft>10?'#F59E0B':'#EF4444';
-
-  g('mb-d').textContent=fmt(MB);
-
-  var tot=EXP.reduce(function(s,e){return s+e.amount;},0);
-  g('all-t').textContent=fmt(tot);
-  g('all-c').textContent=EXP.length+' Eintraege';
-
-  var al=g('all-l');
-  al.innerHTML='';
-  if(EXP.length===0){
-    var ae=el('div');
-    ae.style.cssText='text-align:center;padding:24px 0;color:rgba(255,255,255,.3);font-size:13px';
-    ae.textContent='Noch keine Ausgaben';
-    al.appendChild(ae);
-  }else{
-    var grp={};
-    EXP.forEach(function(e){
-      if(!grp[e.date])grp[e.date]=[];
-      grp[e.date].push(e);
-    });
-    var keys=Object.keys(grp).sort(function(a,b){return b.localeCompare(a);});
-    var todD=today(),yestD=new Date(Date.now()-86400000).toISOString().split('T')[0];
-
-    keys.forEach(function(date,ki){
-      var exps=grp[date],
-          dt=exps.reduce(function(s,e){return s+e.amount;},0);
-
-      var lbl=date===todD?'HEUTE':
-              date===yestD?'GESTERN':
-              new Date(date).toLocaleDateString('de-DE',{
-                weekday:'short',day:'numeric',month:'short'
-              }).toUpperCase();
-
-      var sh=el('div');
-      sh.className='sh';
-      sh.style.marginTop=ki===0?'0':'16px';
-
-      var sl=el('div');
-      sl.className='shl';
-      sl.textContent=lbl;
-
-      var sr=el('div');
-      sr.className='shr';
-      sr.textContent=fmt(dt);
-
-      sh.appendChild(sl);
-      sh.appendChild(sr);
-      al.appendChild(sh);
-
-      var cd=el('div');
-      cd.className='card';
-      cd.style.padding='8px 14px';
-
-      exps.forEach(function(e){
-        cd.appendChild(makeRow(e));
-      });
-      al.appendChild(cd);
-    });
-
-    
+      
